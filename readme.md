@@ -1,3 +1,5 @@
+# This build is still in progress
+
 # Mapper
 
 ![mapper demo](Animated gif of mapper working)
@@ -27,3 +29,5 @@ To get this project up and running:
     	./node_modules/.bin/gulp
 
 - In your terminal you should see the url for the server that this project starts:
+
+	![mapper launched](readmeAttachments/MapperLaunched.png)
