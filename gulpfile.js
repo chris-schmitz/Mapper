@@ -22,5 +22,5 @@ gulp.task('build-app', function (){
 });
 
 gulp.task('watch', function (){
-    gulp.watch('src/**/*.js', ['build']);
-})
+    gulp.watch('src/**/*.{js,vue,scss}', ['build-app']);
+});
