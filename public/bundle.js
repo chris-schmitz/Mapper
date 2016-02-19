@@ -10292,20 +10292,62 @@ module.exports = {
             var el = document.getElementById('map');
             var options = {
                 center: { lat: 38.599979, lng: -90.285616 },
-                zoom: 18,
+                zoom: 12,
                 mapTypeId: 'hybrid'
             };
             this.map = new google.maps.Map(el, options);
             this.setLocationMarkers();
+            this.centerMap();
         }.bind(this));
     },
     methods: {
         setLocationMarkers: function setLocationMarkers() {
-            debugger;
-            console.log('Markers loading');
-            var positions = this.locations.map(function (location) {
+            this.locations.forEach(function (location) {
                 this.addMarker(location.position, 'test');
             }, this);
+        },
+        centerMap: function centerMap() {
+            var lowestLatitude = this.locations.reduce(function (carry, nextLocation, index) {
+                // leaving this in for a good demo on looking at functional programming
+                // console.group('index: ' + index);
+                //     console.group('Carry:');
+                //         console.log(carry);
+                //     console.groupEnd();
+                //         console.group('Next:');
+                //         console.log(nextLocation);
+                //         console.log(nextLocation.position.lat);
+                //     console.groupEnd();
+                // console.groupEnd();
+                return carry < nextLocation.position.lat && carry !== null ? carry : nextLocation.position.lat;
+            }, null);
+
+            var lowestLongitude = this.locations.reduce(function (carry, nextLocation, index) {
+                return carry < nextLocation.position.lng && carry !== null ? carry : nextLocation.position.lng;
+            }, null);
+
+            var highestLatitude = this.locations.reduce(function (carry, nextLocation, index) {
+                return carry > nextLocation.position.lng && carry !== null ? carry : nextLocation.position.lat;
+            }, null);
+
+            var highestLongitude = this.locations.reduce(function (carry, nextLocation, index) {
+                return carry > nextLocation.position.lng && carry !== null ? carry : nextLocation.position.lng;
+            }, null);
+
+            debugger;
+            var southWest = new google.maps.LatLng({ lat: lowestLatitude, lng: lowestLongitude });
+            var northEast = new google.maps.LatLng({ lat: highestLatitude, lng: highestLongitude });
+            var bounds = new google.maps.LatLngBounds(southWest, northEast);
+            this.map.fitBounds(bounds);
+            // based on all available locations:
+            // - figure out the most southwest point
+            //      - The "smallest" latitude
+            //      - The "smallest" longitude
+            // - figure out the most northeast point
+            //      - The "largest" latitude
+            //      - The "largest" longitude
+            // - Create a new latlngbounds class
+            // - add the bounds class to the map instance via the `fitBounds`
+            //      method
         },
         onShowLocation: function onShowLocation(location) {
             debugger;
