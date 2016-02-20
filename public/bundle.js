@@ -10319,6 +10319,8 @@ module.exports = {
                 //     console.groupEnd();
                 // console.groupEnd();
                 return carry < nextLocation.position.lat && carry !== null ? carry : nextLocation.position.lat;
+                // initial starting value, note that this should be null and not
+                // a number like 0 which is a valid lat or lng value.
             }, null);
 
             var lowestLongitude = this.locations.reduce(function (carry, nextLocation, index) {
@@ -10333,21 +10335,10 @@ module.exports = {
                 return carry > nextLocation.position.lng && carry !== null ? carry : nextLocation.position.lng;
             }, null);
 
-            debugger;
             var southWest = new google.maps.LatLng({ lat: lowestLatitude, lng: lowestLongitude });
             var northEast = new google.maps.LatLng({ lat: highestLatitude, lng: highestLongitude });
             var bounds = new google.maps.LatLngBounds(southWest, northEast);
             this.map.fitBounds(bounds);
-            // based on all available locations:
-            // - figure out the most southwest point
-            //      - The "smallest" latitude
-            //      - The "smallest" longitude
-            // - figure out the most northeast point
-            //      - The "largest" latitude
-            //      - The "largest" longitude
-            // - Create a new latlngbounds class
-            // - add the bounds class to the map instance via the `fitBounds`
-            //      method
         },
         onShowLocation: function onShowLocation(location) {
             debugger;
@@ -10401,8 +10392,6 @@ module.exports = {
         };
     },
     events: {
-        addANewLocation: 'onAddANewLocation',
-
         // this is just a way for the locations component to talk to the
         // map component so we're just handling it with a quick closure vs
         // abstracting it out to it's own method.
@@ -10414,7 +10403,8 @@ module.exports = {
         getPositionForAddress: function getPositionForAddress(location) {
             return this.$broadcast('getPositionForAddress', location);
         },
-        onAddANewLocation: function onAddANewLocation(address) {
+        addANewLocation: function addANewLocation(address) {
+            debugger;
             // verify address
             // create a location object
             // get the position for the address
@@ -10427,7 +10417,7 @@ module.exports = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"panel panel-success cs-mapper\">\n    <div class=\"panel-heading\">\n        Mapper\n    </div>\n\n    <div class=\"body\">\n        <div class=\"col-sm-3 locations-container\">\n            <cs-location v-for=\"location in locations\" :location=\"location\">\n        </cs-location></div>\n        <div class=\"col-sm-9 map-container\">\n            <cs-map :locations=\"locations\"></cs-map>\n        </div>\n    </div>\n\n    <div class=\"panel-footer\">\n        <button type=\"button\" class=\"btn btn-success\">New Location</button>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"panel panel-success cs-mapper\">\n    <div class=\"panel-heading\">\n        Mapper\n    </div>\n\n    <div class=\"body\">\n        <div class=\"col-sm-3 locations-container\">\n            <cs-location v-for=\"location in locations\" :location=\"location\">\n        </cs-location></div>\n        <div class=\"col-sm-9 map-container\">\n            <cs-map :locations=\"locations\"></cs-map>\n        </div>\n    </div>\n\n    <div class=\"panel-footer\">\n        <button data-toggle=\"modal\" data-target=\"#newLocationWindow\" type=\"button\" class=\"btn btn-success\">New Location</button>\n    </div>\n</div>\n<div class=\"cs-alert\" v-show=\"showNewLocationWindow\">\n\n    <div class=\"modal fade\" id=\"newLocationWindow\" tabindex=\"-1\"> <!-- the lightbox style dark overlay -->\n        <div class=\"modal-dialog\"> <!-- the box around the modal that makes it float(?) -->\n            <div class=\"modal-content modal-content-primary\"> <!-- the start of the actual modal window. From here on it's structured similar to a panel -->\n                <div class=\"modal-header\">\n                    <!-- note that they're handling the js actions via the `data-...` tags, not onclick -->\n                    <button type=\"button\" class=\"close\" data-dismiss=\"modal\"><span>×</span></button>\n                    <h4 class=\"modal-title\">New Location</h4>\n                </div>\n                <div class=\"modal-body\">\n                    <form>\n                        <div class=\"form-group\">\n                            <label for=\"address\">Address</label>\n                            <input type=\"text\" class=\"form-control\" name=\"address\" placeholder=\"123 Main St\">\n                        </div>\n                        <div class=\"row\">\n                            <div class=\"form-group col-sm-7\">\n                                <label for=\"city\">City</label>\n                                <input type=\"text\" class=\"form-control\" name=\"city\" placeholder=\"Anytown\">\n                            </div>\n                            <div class=\"form-group col-sm-2\">\n                                <label for=\"state\">State</label>\n                                <input type=\"text\" class=\"form-control\" name=\"state\" placeholder=\"ZZ\">\n                            </div>\n                            <div class=\"form-group col-sm-3\">\n                                <label for=\"zip\">Zip</label>\n                                <input type=\"text\" class=\"form-control\" name=\"zip\" placeholder=\"12345\">\n                            </div>\n                        </div>\n                    </form>\n                </div>\n                <div class=\"modal-footer\">\n                    <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n                    <!-- notice that here they're NOT using the `data-...` attribute to do anything, here's where we can hook in to\n                        do whatever save stuff we want -->\n                    <button type=\"button\" class=\"btn btn-success\">Save</button>\n                </div>\n            </div>\n        </div>\n    </div>\n\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)

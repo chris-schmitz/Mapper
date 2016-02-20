@@ -69,6 +69,8 @@
                         //     console.groupEnd();
                         // console.groupEnd();
                         return carry < nextLocation.position.lat && carry !== null ? carry : nextLocation.position.lat;
+                // initial starting value, note that this should be null and not
+                // a number like 0 which is a valid lat or lng value.
                 }, null);
 
                 var lowestLongitude = this.locations.reduce(function (carry, nextLocation, index){
@@ -83,21 +85,10 @@
                         return carry > nextLocation.position.lng && carry !== null ? carry : nextLocation.position.lng;
                 }, null);
 
-                debugger;
                 var southWest = new google.maps.LatLng({ lat: lowestLatitude, lng: lowestLongitude});
                 var northEast = new google.maps.LatLng({ lat: highestLatitude, lng: highestLongitude});
                 var bounds = new google.maps.LatLngBounds(southWest, northEast);
                 this.map.fitBounds(bounds);
-                // based on all available locations:
-                // - figure out the most southwest point
-                //      - The "smallest" latitude
-                //      - The "smallest" longitude
-                // - figure out the most northeast point
-                //      - The "largest" latitude
-                //      - The "largest" longitude
-                // - Create a new latlngbounds class
-                // - add the bounds class to the map instance via the `fitBounds`
-                //      method
             },
             onShowLocation: function (location){
                 debugger;
