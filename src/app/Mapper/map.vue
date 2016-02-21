@@ -26,7 +26,8 @@
         },
         events:{
             // getPositionForAddress: 'onGetPositionForAddress',
-            showLocation: 'onShowLocation'
+            showLocation: 'onShowLocation',
+            placeLocationOnMap: 'onPlaceLocationOnMap'
         },
         created: function (){
             var GoogleMapsLoader = require('google-maps');
@@ -90,6 +91,9 @@
                 var bounds = new google.maps.LatLngBounds(southWest, northEast);
                 this.map.fitBounds(bounds);
             },
+            panAndZoomToPin: function (bounds){
+                this.map.fitBounds(bounds)
+            },
             onShowLocation: function (location){
                 debugger;
                 console.log(location);
@@ -105,6 +109,11 @@
                     map: this.map
                 });
             },
+            onPlaceLocationOnMap: function (location, bounds){
+                debugger;
+                this.addMarker(location.position);
+                this.panAndZoomToPin(bounds);
+            }
             // onGetPositionForAddress: function (location){
             //     debugger;
             //     // broadcast down to the map to get the position information
