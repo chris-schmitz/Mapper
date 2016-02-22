@@ -14,27 +14,13 @@
                 </div>
                 <div class="modal-body">
                     <form>
-                        <div class="form-group" :class="{ 'has-error': location.address.error }">
+                        <div class="form-group" :class="{ 'has-error': location.hasError }">
                             <label class="control-label" for="address">Address</label>
-                            <input type="text" v-model="location.address.value" class="form-control" name="address" placeholder="123 Main St">
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-sm-7" :class="{ 'has-error': location.city.error }">
-                                <label class="control-label" for="city">City</label>
-                                <input type="text" v-model="location.city.value" class="form-control" name="city" placeholder="Anytown">
-                            </div>
-                            <div class="form-group col-sm-2" :class="{ 'has-error': location.state.error }">
-                                <label class="control-label" for="state">State</label>
-                                <input type="text" v-model="location.state.value" @keydown="limitLength(2, $event)" class="form-control" name="state" placeholder="ZZ">
-                            </div>
-                            <div class="form-group col-sm-3" :class="{ 'has-error': location.zip.error }">
-                                <label class="control-label" for="zip">Zip</label>
-                                <input type="text" v-model="location.zip.value" @keydown="limitLength(5, $event)" class="form-control" name="zip" placeholder="12345">
-                            </div>
+                            <input type="text" v-model="location.address" class="form-control" name="address" placeholder="123 Main St">
                         </div>
                         <div class="form-group">
-                            <label class="control-label" for="name">Location Name</label>
-                            <input type="text" v-model="location.name" class="form-control" name="name" placeholder="That taco place">
+                            <label class="control-label" for="name">Description</label>
+                            <input type="text" v-model="location.name" class="form-control" name="name" placeholder="(Optional)">
                         </div>
                     </form>
                 </div>
@@ -55,22 +41,8 @@
             return {
                 location:{
                     name: null,
-                    address: {
-                        value: null,
-                        error: false
-                    },
-                    city: {
-                        value: null,
-                        error: false
-                    },
-                    state: {
-                        value: null,
-                        error: false
-                    },
-                    zip: {
-                        value: null,
-                        error: false
-                    }
+                    address: null,
+                    hasError: false
                 }
             }
         },
@@ -84,13 +56,12 @@
             },
             lookupLocationData: function (){
                 // mask window
-                var address = [this.location.address.value, this.location.city.value, this.location.state.value, this.location.zip.value].join(' ');
                 // note that we're creating the geocoder here because the google library isn't loaded
                 // until after all of the components are created. We'll leave it like this for now, but if
                 // we wanted to be really clean with our modularity we'd move it into the map.vue file and
                 // handle the data passing via dispatch and broadcast events.
                 var geocoder = new google.maps.Geocoder;
-                geocoder.geocode({ address: address }, (function (result){
+                geocoder.geocode({ address: this.location.address }, (function (result){
                     debugger;
                     // unmask window
                     if (result.length === 0){
@@ -99,12 +70,8 @@
                         // is there a way we can do this with vue instead of jquery?
                         $('#newLocationWindow').modal('hide');
                         // should we really do it this way or should we pass back the data from from google?
-                        var address = {
-                            address: this.location.address.value,
-                            city: this.location.city.value,
-                            state: this.location.state.value,
-                            zip: this.location.zip.value
-                        };
+                        // yep, pull from google
+                        var address = result[0].formatted_address;
                         var name = this.location.name;
                         var latLng = result[0].geometry.location;
                         var bounds = result[0].geometry.viewport;

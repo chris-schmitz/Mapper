@@ -54,34 +54,19 @@
                 locations:[
                     {
                         id: 1,
-                        address:{
-                            address: '100 Washington Ave',
-                            city: 'St. Louis',
-                            state: 'MO',
-                            zip: 63102
-                        },
+                        address: '100 Washington Ave St. Louis MO 63102',
                         name: "Saint Louis Arch",
                         position: {lat: 38.628744, lng: -90.183859}
                     },
                     {
                         id: 2,
-                        address:{
-                            address: '2414 Menard St',
-                            city: 'St. Louis',
-                            state: 'MO',
-                            zip: 63104
-                        },
+                        address: '2414 Menard St St. Louis MO 63104',
                         name: "BWorks",
                         position: {lat: 38.602778, lng: -90.209273}
                     },
                     {
                         id: 3,
-                        address:{
-                            address: '3260 Hampton Ave',
-                            city: 'St.Louis',
-                            state: 'MO',
-                            zip: 63139
-                        },
+                        address: '3260 Hampton Ave St.Louis MO 63139',
                         name: "Skeleton Key",
                         position: {lat: 38.602808, lng: -90.291371}
                     }

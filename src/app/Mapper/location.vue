@@ -10,7 +10,7 @@
 
 <template>
     <button @click="onLocationClick" type="button" class="cs-locations btn btn-success">
-        <b>{{ location.name }}</b>: {{ inlineAddress }}
+        <b>{{ location.name }}</b>: {{ location.address }}
     </button>
 </template>
 
@@ -24,15 +24,6 @@
                 test: 'From Location component'
             }
         },
-        computed: {
-            inlineAddress: function (){
-                return [
-                    this.location.address.address,
-                    this.location.address.city,
-                    this.location.address.state,
-                    this.location.address.zip,
-                ].join(' ');
-            }
         },
         methods:{
             onLocationClick: function (){

@@ -10238,11 +10238,6 @@ module.exports = {
             test: 'From Location component'
         };
     },
-    computed: {
-        inlineAddress: function inlineAddress() {
-            return [this.location.address.address, this.location.address.city, this.location.address.state, this.location.address.zip].join(' ');
-        }
-    },
     methods: {
         onLocationClick: function onLocationClick() {
             this.$dispatch('triggerLocationDisplay', this.location);
@@ -10252,7 +10247,7 @@ module.exports = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button @click=\"onLocationClick\" type=\"button\" class=\"cs-locations btn btn-success\">\n    <b>{{ location.name }}</b>: {{ inlineAddress }}\n</button>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button @click=\"onLocationClick\" type=\"button\" class=\"cs-locations btn btn-success\">\n    <b>{{ location.name }}</b>: {{ location.address }}\n</button>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -10416,32 +10411,17 @@ module.exports = {
         return {
             locations: [{
                 id: 1,
-                address: {
-                    address: '100 Washington Ave',
-                    city: 'St. Louis',
-                    state: 'MO',
-                    zip: 63102
-                },
+                address: '100 Washington Ave St. Louis MO 63102',
                 name: "Saint Louis Arch",
                 position: { lat: 38.628744, lng: -90.183859 }
             }, {
                 id: 2,
-                address: {
-                    address: '2414 Menard St',
-                    city: 'St. Louis',
-                    state: 'MO',
-                    zip: 63104
-                },
+                address: '2414 Menard St St. Louis MO 63104',
                 name: "BWorks",
                 position: { lat: 38.602778, lng: -90.209273 }
             }, {
                 id: 3,
-                address: {
-                    address: '3260 Hampton Ave',
-                    city: 'St.Louis',
-                    state: 'MO',
-                    zip: 63139
-                },
+                address: '3260 Hampton Ave St.Louis MO 63139',
                 name: "Skeleton Key",
                 position: { lat: 38.602808, lng: -90.291371 }
             }]
@@ -10481,6 +10461,7 @@ module.exports = {
             // other. I think we should go with the broadcast so that when we have a new instance added
             // we can use the bounds passed back to pan and zoom the map to the new pin.
             debugger;
+            this.$broadcast('pressLocationButton', location);
             this.$broadcast('placeLocationOnMap', location, bounds);
         }
     }
@@ -10511,22 +10492,8 @@ module.exports = {
         return {
             location: {
                 name: null,
-                address: {
-                    value: null,
-                    error: false
-                },
-                city: {
-                    value: null,
-                    error: false
-                },
-                state: {
-                    value: null,
-                    error: false
-                },
-                zip: {
-                    value: null,
-                    error: false
-                }
+                address: null,
+                hasError: false
             }
         };
     },
@@ -10540,13 +10507,12 @@ module.exports = {
         },
         lookupLocationData: function lookupLocationData() {
             // mask window
-            var address = [this.location.address.value, this.location.city.value, this.location.state.value, this.location.zip.value].join(' ');
             // note that we're creating the geocoder here because the google library isn't loaded
             // until after all of the components are created. We'll leave it like this for now, but if
             // we wanted to be really clean with our modularity we'd move it into the map.vue file and
             // handle the data passing via dispatch and broadcast events.
             var geocoder = new google.maps.Geocoder();
-            geocoder.geocode({ address: address }, function (result) {
+            geocoder.geocode({ address: this.location.address }, function (result) {
                 debugger;
                 // unmask window
                 if (result.length === 0) {
@@ -10555,12 +10521,8 @@ module.exports = {
                     // is there a way we can do this with vue instead of jquery?
                     $('#newLocationWindow').modal('hide');
                     // should we really do it this way or should we pass back the data from from google?
-                    var address = {
-                        address: this.location.address.value,
-                        city: this.location.city.value,
-                        state: this.location.state.value,
-                        zip: this.location.zip.value
-                    };
+                    // yep, pull from google
+                    var address = result[0].formatted_address;
                     var name = this.location.name;
                     var latLng = result[0].geometry.location;
                     var bounds = result[0].geometry.viewport;
@@ -10581,7 +10543,7 @@ module.exports = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button data-toggle=\"modal\" data-target=\"#newLocationWindow\" type=\"button\" class=\"btn btn-success\">New Location</button>\n<div class=\"modal fade\" id=\"newLocationWindow\" tabindex=\"-1\"> <!-- the lightbox style dark overlay -->\n    <div class=\"modal-dialog\"> <!-- the box around the modal that makes it float(?) -->\n        <div class=\"modal-content modal-content-primary\"> <!-- the start of the actual modal window. From here on it's structured similar to a panel -->\n            <div class=\"modal-header\">\n                <!-- note that they're handling the js actions via the `data-...` tags, not onclick -->\n                <button type=\"button\" class=\"close\" data-dismiss=\"modal\"><span>×</span></button>\n                <h4 class=\"modal-title\">New Location</h4>\n            </div>\n            <div class=\"modal-body\">\n                <form>\n                    <div class=\"form-group\" :class=\"{ 'has-error': location.address.error }\">\n                        <label class=\"control-label\" for=\"address\">Address</label>\n                        <input type=\"text\" v-model=\"location.address.value\" class=\"form-control\" name=\"address\" placeholder=\"123 Main St\">\n                    </div>\n                    <div class=\"row\">\n                        <div class=\"form-group col-sm-7\" :class=\"{ 'has-error': location.city.error }\">\n                            <label class=\"control-label\" for=\"city\">City</label>\n                            <input type=\"text\" v-model=\"location.city.value\" class=\"form-control\" name=\"city\" placeholder=\"Anytown\">\n                        </div>\n                        <div class=\"form-group col-sm-2\" :class=\"{ 'has-error': location.state.error }\">\n                            <label class=\"control-label\" for=\"state\">State</label>\n                            <input type=\"text\" v-model=\"location.state.value\" @keydown=\"limitLength(2, $event)\" class=\"form-control\" name=\"state\" placeholder=\"ZZ\">\n                        </div>\n                        <div class=\"form-group col-sm-3\" :class=\"{ 'has-error': location.zip.error }\">\n                            <label class=\"control-label\" for=\"zip\">Zip</label>\n                            <input type=\"text\" v-model=\"location.zip.value\" @keydown=\"limitLength(5, $event)\" class=\"form-control\" name=\"zip\" placeholder=\"12345\">\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label class=\"control-label\" for=\"name\">Location Name</label>\n                        <input type=\"text\" v-model=\"location.name\" class=\"form-control\" name=\"name\" placeholder=\"That taco place\">\n                    </div>\n                </form>\n            </div>\n            <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n                <!-- notice that here they're NOT using the `data-...` attribute to do anything, here's where we can hook in to\n                do whatever save stuff we want -->\n                <button type=\"button\" @click=\"saveNewLocation\" class=\"btn btn-success\">Save</button>\n            </div>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button data-toggle=\"modal\" data-target=\"#newLocationWindow\" type=\"button\" class=\"btn btn-success\">New Location</button>\n<div class=\"modal fade\" id=\"newLocationWindow\" tabindex=\"-1\"> <!-- the lightbox style dark overlay -->\n    <div class=\"modal-dialog\"> <!-- the box around the modal that makes it float(?) -->\n        <div class=\"modal-content modal-content-primary\"> <!-- the start of the actual modal window. From here on it's structured similar to a panel -->\n            <div class=\"modal-header\">\n                <!-- note that they're handling the js actions via the `data-...` tags, not onclick -->\n                <button type=\"button\" class=\"close\" data-dismiss=\"modal\"><span>×</span></button>\n                <h4 class=\"modal-title\">New Location</h4>\n            </div>\n            <div class=\"modal-body\">\n                <form>\n                    <div class=\"form-group\" :class=\"{ 'has-error': location.hasError }\">\n                        <label class=\"control-label\" for=\"address\">Address</label>\n                        <input type=\"text\" v-model=\"location.address\" class=\"form-control\" name=\"address\" placeholder=\"123 Main St\">\n                    </div>\n                    <div class=\"form-group\">\n                        <label class=\"control-label\" for=\"name\">Description</label>\n                        <input type=\"text\" v-model=\"location.name\" class=\"form-control\" name=\"name\" placeholder=\"(Optional)\">\n                    </div>\n                </form>\n            </div>\n            <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n                <!-- notice that here they're NOT using the `data-...` attribute to do anything, here's where we can hook in to\n                do whatever save stuff we want -->\n                <button type=\"button\" @click=\"saveNewLocation\" class=\"btn btn-success\">Save</button>\n            </div>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
