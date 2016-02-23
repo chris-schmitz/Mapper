@@ -21,13 +21,14 @@
         data: function (){
             return {
                 placeholderText: 'Google Map',
-                map: null
+                map: null,
+                geocoder: null
             }
         },
         events:{
-            // getPositionForAddress: 'onGetPositionForAddress',
             showLocation: 'onShowLocation',
-            placeLocationOnMap: 'onPlaceLocationOnMap'
+            placeLocationOnMap: 'onPlaceLocationOnMap',
+            sendLookupLocationRequest: 'onSendLookupLocationRequest'
         },
         created: function (){
             var GoogleMapsLoader = require('google-maps');
@@ -45,7 +46,10 @@
                         zoom: 12,
                         mapTypeId: 'hybrid'
                     };
+
                     this.map = new google.maps.Map(el, options);
+                    this.geocoder = new google.maps.Geocoder;
+
                     this.setLocationMarkers();
                     this.centerMap();
                 }).bind(this)
@@ -115,17 +119,21 @@
                 if(bounds !== null){
                     this.panAndZoomToPin(bounds);
                 }
+            },
+            onSendLookupLocationRequest: function (address){
+                debugger;
+                this.geocoder.geocode({ address: address }, (function (result){
+                    debugger;
+                    // unmask window
+                    if (result.length === 0){
+                        this.$dispatch('failedLocationLookup');
+                    } else {
+                        this.$dispatch('successfulLocationLookup', result);
+                    }
+
+                }).bind(this));
+
             }
-            // onGetPositionForAddress: function (location){
-            //     debugger;
-            //     // broadcast down to the map to get the position information
-            //     // make a call out to google's geolocation api
-            //     // on success
-            //         // create the latlang object
-            //         // add it as the `position` of the location
-            //         // place it on the map
-            //     // show a notification to the user that there was an error locating the specific address
-            // },
         }
     }
 </script>

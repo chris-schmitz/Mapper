@@ -84,12 +84,21 @@
             }
         },
         events:{
+            addNewLocation: 'onAddNewLocation',
             // this is just a way for the locations component to talk to the
             // map component so we're just handling it with a quick closure vs
             // abstracting it out to it's own method.
-            addNewLocation: 'onAddNewLocation',
+            sendLookupLocationRequest: function (address){
+                this.$broadcast('sendLookupLocationRequest', address);
+            },
             triggerLocationDisplay: function (location){
                 this.$broadcast('showLocation', location);
+            },
+            failedLocationLookup: function (){
+                this.$broadcast('failedLocationLookup');
+            },
+            successfulLocationLookup: function (result){
+                this.$broadcast('successfulLocationLookup', result);
             }
         },
         methods: {
