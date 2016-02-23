@@ -10238,7 +10238,13 @@ module.exports = {
             test: 'From Location component'
         };
     },
+    events: {
+        pressLocationButton: 'onPressLocationButton'
+    },
     methods: {
+        onPressLocationButton: function onPressLocationButton() {
+            // if this is the location, press the button
+        },
         onLocationClick: function onLocationClick() {
             this.$dispatch('triggerLocationDisplay', this.location);
             // trigger the info popover for the location
@@ -10362,7 +10368,9 @@ module.exports = {
         onPlaceLocationOnMap: function onPlaceLocationOnMap(location, bounds) {
             debugger;
             this.addMarker(location.position);
-            this.panAndZoomToPin(bounds);
+            if (bounds !== null) {
+                this.panAndZoomToPin(bounds);
+            }
         }
         // onGetPositionForAddress: function (location){
         //     debugger;
@@ -10394,7 +10402,7 @@ if (module.hot) {(function () {  module.hot.accept()
   }
 })()}
 },{"google-maps":2,"vue":4,"vue-hot-reload-api":3,"vueify-insert-css":5}],8:[function(require,module,exports){
-var __vueify_style__ = require("vueify-insert-css").insert("/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 5, stdin */\n.cs-mapper .body {\n  height: 500px; }\n\n/* line 9, stdin */\n.cs-mapper .map-container {\n  padding: 0px; }\n\n/* line 13, stdin */\n.cs-mapper .locations-container {\n  height: 100%;\n  padding: 0px; }\n")
+var __vueify_style__ = require("vueify-insert-css").insert("/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 5, stdin */\n.cs-mapper .body {\n  height: 500px; }\n\n/* line 9, stdin */\n.cs-mapper .map-container {\n  padding: 0px; }\n\n/* line 13, stdin */\n.cs-mapper .locations-container {\n  height: 100%;\n  padding: 0px;\n  background-color: grey; }\n  /* line 19, stdin */\n  .cs-mapper .locations-container h3 {\n    text-align: center;\n    color: white;\n    margin: 0px;\n    padding: 10px; }\n")
 'use strict';
 
 var location = require('./location.vue');
@@ -10455,26 +10463,20 @@ module.exports = {
             // component because whenever a new location is added we want to
             // pan and zoom to show it. We can't do that if it's just a bind.
 
-            // start here. We have two instances of how we add locations to the map, the original is by
-            // binding the locations to the map component and iterating over them wihin the map and then
-            // what we have planned out here where we broadcast new instances. We should pick one or the
-            // other. I think we should go with the broadcast so that when we have a new instance added
-            // we can use the bounds passed back to pan and zoom the map to the new pin.
-            debugger;
             this.$broadcast('pressLocationButton', location);
             this.$broadcast('placeLocationOnMap', location, bounds);
         }
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"panel panel-success cs-mapper\">\n    <div class=\"panel-heading\">\n        Mapper\n    </div>\n\n    <div class=\"body\">\n        <div class=\"col-sm-3 locations-container\">\n            <cs-location v-for=\"location in locations\" :location=\"location\">\n        </cs-location></div>\n        <div class=\"col-sm-9 map-container\">\n            <cs-map :locations=\"locations\"></cs-map>\n        </div>\n    </div>\n\n    <div class=\"panel-footer\">\n        <cs-new-location-contributor></cs-new-location-contributor>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"panel panel-success cs-mapper\">\n    <div class=\"panel-heading\">\n        <h1>Mapper</h1>\n    </div>\n\n    <div class=\"body\">\n        <div class=\"col-sm-3 locations-container\">\n            <h3>Saved Locaitons</h3>\n            <cs-location v-for=\"location in locations\" :location=\"location\">\n        </cs-location></div>\n        <div class=\"col-sm-9 map-container\">\n            <cs-map :locations=\"locations\"></cs-map>\n        </div>\n    </div>\n\n    <div class=\"panel-footer\">\n        <cs-new-location-contributor></cs-new-location-contributor>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   var id = "/Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/mapper.vue"
   module.hot.dispose(function () {
-    require("vueify-insert-css").cache["/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 5, stdin */\n.cs-mapper .body {\n  height: 500px; }\n\n/* line 9, stdin */\n.cs-mapper .map-container {\n  padding: 0px; }\n\n/* line 13, stdin */\n.cs-mapper .locations-container {\n  height: 100%;\n  padding: 0px; }\n"] = false
+    require("vueify-insert-css").cache["/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 5, stdin */\n.cs-mapper .body {\n  height: 500px; }\n\n/* line 9, stdin */\n.cs-mapper .map-container {\n  padding: 0px; }\n\n/* line 13, stdin */\n.cs-mapper .locations-container {\n  height: 100%;\n  padding: 0px;\n  background-color: grey; }\n  /* line 19, stdin */\n  .cs-mapper .locations-container h3 {\n    text-align: center;\n    color: white;\n    margin: 0px;\n    padding: 10px; }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {

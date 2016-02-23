@@ -13,6 +13,15 @@
         .locations-container{
             height:100%;
             padding: 0px;
+            background-color: grey;
+
+
+            h3{
+                text-align: center;
+                color:white;
+                margin: 0px;
+                padding: 10px;
+            }
         }
     }
 </style>
@@ -20,11 +29,12 @@
 <template>
     <div class="panel panel-success cs-mapper">
         <div class="panel-heading">
-            Mapper
+            <h1>Mapper</h1>
         </div>
 
         <div class="body">
             <div class="col-sm-3 locations-container">
+                <h3>Saved Locaitons</h3>
                 <cs-location v-for="location in locations" :location="location"></cs-locations>
             </div>
             <div class="col-sm-9 map-container">
@@ -101,12 +111,7 @@
                 // component because whenever a new location is added we want to
                 // pan and zoom to show it. We can't do that if it's just a bind.
 
-// start here. We have two instances of how we add locations to the map, the original is by
-// binding the locations to the map component and iterating over them wihin the map and then
-// what we have planned out here where we broadcast new instances. We should pick one or the
-// other. I think we should go with the broadcast so that when we have a new instance added
-// we can use the bounds passed back to pan and zoom the map to the new pin.
-                debugger;
+                this.$broadcast('pressLocationButton', location);
                 this.$broadcast('placeLocationOnMap', location, bounds);
             }
         }

@@ -112,7 +112,9 @@
             onPlaceLocationOnMap: function (location, bounds){
                 debugger;
                 this.addMarker(location.position);
-                this.panAndZoomToPin(bounds);
+                if(bounds !== null){
+                    this.panAndZoomToPin(bounds);
+                }
             }
             // onGetPositionForAddress: function (location){
             //     debugger;
