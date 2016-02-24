@@ -10355,7 +10355,6 @@ module.exports = {
             this.map.fitBounds(bounds);
         },
         onShowLocation: function onShowLocation(location) {
-            debugger;
             console.log(location);
             // triggered when
             //      a user clicks on a location button in the nav
@@ -10370,16 +10369,13 @@ module.exports = {
             });
         },
         onPlaceLocationOnMap: function onPlaceLocationOnMap(location, bounds) {
-            debugger;
             this.addMarker(location.position);
             if (bounds !== null) {
                 this.panAndZoomToPin(bounds);
             }
         },
         onSendLookupLocationRequest: function onSendLookupLocationRequest(address) {
-            debugger;
             this.geocoder.geocode({ address: address }, function (result) {
-                debugger;
                 // unmask window
                 if (result.length === 0) {
                     this.$dispatch('failedLocationLookup');
@@ -10501,66 +10497,79 @@ if (module.hot) {(function () {  module.hot.accept()
   }
 })()}
 },{"./location.vue":6,"./map.vue":7,"./newLocationContributor.vue":9,"vue":4,"vue-hot-reload-api":3,"vueify-insert-css":5}],9:[function(require,module,exports){
-var __vueify_style__ = require("vueify-insert-css").insert("\n\n")
+var __vueify_style__ = require("vueify-insert-css").insert("/* line 3, stdin */\n#newLocationWindow .btn {\n  width: 80px; }\n")
 'use strict';
 
+function initialState() {
+    return {
+        modalBodyDisplay: 'getUserInput', // possible values: 'getUserInput', 'confirmGeocodedValue'
+        submitButtonText: 'Lookup', // possible values 'Lookup', 'Yes'
+        addressToConfirm: null,
+        bestViewedByTheseBounds: null,
+        location: {
+            name: null,
+            address: null,
+            position: null
+        }
+    };
+}
+
 module.exports = {
+
     data: function data() {
-        return {
-            location: {
-                name: null,
-                address: null,
-                hasError: false
-            }
-        };
+        return initialState();
     },
     events: {
         failedLocationLookup: 'onFailedLocationLookup',
         successfulLocationLookup: 'onSuccessfulLocationLookup'
     },
     methods: {
-        // it seems silly that we have this extra layer here, if we don't
-        // end up doing anything now other than calling another method
-        // we should eliminate this method and call the locationLookupData
-        // directly
+        submitClick: function submitClick() {
+            if (this.modalBodyDisplay === 'getUserInput') {
+                this.lookupLocationData();
+            } else {
+                this.saveNewLocation();
+            }
+        },
         saveNewLocation: function saveNewLocation() {
             // is there a way we can do this with vue instead of jquery?
             $('#newLocationWindow').modal('hide');
+            this.$dispatch('addNewLocation', this.location.address, this.location.name, this.location.position, this.bestViewedByTheseBounds);
         },
         lookupLocationData: function lookupLocationData() {
             this.maskWindow();
-            debugger;
             this.$dispatch('sendLookupLocationRequest', this.location.address);
         },
         onSuccessfulLocationLookup: function onSuccessfulLocationLookup(result) {
-            debugger;
+            this.modalBodyDisplay = 'confirmGeocodedValue';
+            this.submitButtonText = 'Yes';
             this.unmaskWindow();
-            var address = result[0].formatted_address;
-            var latLng = result[0].geometry.location;
-            var bounds = result[0].geometry.viewport;
-
-            // confirm that the address is correct
-            // if yes, add to the map
-            // don't save, we'll do that from the pin
-            // description
+            this.addressToConfirm = result[0].formatted_address;
+            this.location.address = result[0].formatted_address;
+            this.location.position = result[0].geometry.location;
+            this.bestViewedByTheseBounds = result[0].geometry.viewport;
         },
         onFailedLocationLookup: function onFailedLocationLookup() {
             debugger;
             this.unmaskWindow();
         },
         maskWindow: function maskWindow() {},
-        unmaskWindow: function unmaskWindow() {}
+        unmaskWindow: function unmaskWindow() {},
+        resetWindow: function resetWindow() {
+            debugger;
+            this.$data = initialState();
+        }
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button data-toggle=\"modal\" data-target=\"#newLocationWindow\" type=\"button\" class=\"btn btn-success\">New Location</button>\n<div class=\"modal fade\" id=\"newLocationWindow\" tabindex=\"-1\"> <!-- the lightbox style dark overlay -->\n    <div class=\"modal-dialog\"> <!-- the box around the modal that makes it float(?) -->\n        <div class=\"modal-content modal-content-primary\"> <!-- the start of the actual modal window. From here on it's structured similar to a panel -->\n            <div class=\"modal-header\">\n                <!-- note that they're handling the js actions via the `data-...` tags, not onclick -->\n                <button type=\"button\" class=\"close\" data-dismiss=\"modal\"><span>×</span></button>\n                <h4 class=\"modal-title\">New Location</h4>\n            </div>\n            <div class=\"modal-body\">\n                <form>\n                    <div class=\"form-group\" :class=\"{ 'has-error': location.hasError }\">\n                        <label class=\"control-label\" for=\"address\">Address</label>\n                        <input type=\"text\" v-model=\"location.address\" class=\"form-control\" name=\"address\" placeholder=\"123 Main St\">\n                    </div>\n                    <div class=\"form-group\">\n                        <label class=\"control-label\" for=\"name\">Description</label>\n                        <input type=\"text\" v-model=\"location.name\" class=\"form-control\" name=\"name\" placeholder=\"(Optional)\">\n                    </div>\n                </form>\n            </div>\n            <div class=\"modal-footer\">\n                <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n                <!-- notice that here they're NOT using the `data-...` attribute to do anything, here's where we can hook in to\n                do whatever save stuff we want -->\n                <button type=\"button\" @click=\"lookupLocationData\" class=\"btn btn-success\">Lookup</button>\n            </div>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button data-toggle=\"modal\" data-target=\"#newLocationWindow\" type=\"button\" class=\"btn btn-success\">New Location</button>\n\n\n<div class=\"modal fade\" id=\"newLocationWindow\" tabindex=\"-1\"> <!-- the lightbox style dark overlay -->\n    <div class=\"modal-dialog\"> <!-- the box around the modal that makes it float(?) -->\n        <div class=\"modal-content modal-content-primary\"> <!-- the start of the actual modal window. From here on it's structured similar to a panel -->\n            <div class=\"modal-header\">\n                <!-- note that they're handling the js actions via the `data-...` tags, not onclick -->\n                <button type=\"button\" class=\"close\" data-dismiss=\"modal\"><span>×</span></button>\n                <h4 class=\"modal-title\">New Location</h4>\n            </div>\n            <div class=\"modal-body\">\n                <div v-show=\"modalBodyDisplay === &quot;getUserInput&quot;\">\n                    <form>\n                        <div class=\"form-group\" :class=\"{ 'has-error': location.hasError }\">\n                            <label class=\"control-label\" for=\"address\">Address</label>\n                            <input type=\"text\" v-model=\"location.address\" class=\"form-control\" name=\"address\" placeholder=\"123 Main St\">\n                        </div>\n                        <div class=\"form-group\">\n                            <label class=\"control-label\" for=\"name\">Description</label>\n                            <input type=\"text\" v-model=\"location.name\" class=\"form-control\" name=\"name\" placeholder=\"(Optional)\">\n                        </div>\n                    </form>\n                </div>\n                <div v-show=\"modalBodyDisplay === &quot;confirmGeocodedValue&quot;\">\n                    <div class=\"confirmation-label\">\n                        Place this address on the map?\n                    </div>\n                     <b>{{ addressToConfirm }}</b>\n                </div>\n            </div>\n            <div class=\"modal-footer\">\n                <button type=\"button\" @click=\"resetWindow\" class=\"btn btn-default\" data-dismiss=\"modal\">Cancel</button>\n                <!-- notice that here they're NOT using the `data-...` attribute to do anything, here's where we can hook in to\n                do whatever save stuff we want -->\n                <button type=\"button\" @click=\"submitClick\" class=\"btn btn-success\">{{ submitButtonText }}</button>\n            </div>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   var id = "/Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/newLocationContributor.vue"
   module.hot.dispose(function () {
-    require("vueify-insert-css").cache["\n\n"] = false
+    require("vueify-insert-css").cache["/* line 3, stdin */\n#newLocationWindow .btn {\n  width: 80px; }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {

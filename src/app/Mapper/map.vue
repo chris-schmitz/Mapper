@@ -99,7 +99,6 @@
                 this.map.fitBounds(bounds)
             },
             onShowLocation: function (location){
-                debugger;
                 console.log(location);
                 // triggered when
                 //      a user clicks on a location button in the nav
@@ -114,16 +113,13 @@
                 });
             },
             onPlaceLocationOnMap: function (location, bounds){
-                debugger;
                 this.addMarker(location.position);
                 if(bounds !== null){
                     this.panAndZoomToPin(bounds);
                 }
             },
             onSendLookupLocationRequest: function (address){
-                debugger;
                 this.geocoder.geocode({ address: address }, (function (result){
-                    debugger;
                     // unmask window
                     if (result.length === 0){
                         this.$dispatch('failedLocationLookup');
