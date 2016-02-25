@@ -105,8 +105,6 @@
             }
         },
         methods: {
-            getPositionForAddress: function (location){
-                return this.$broadcast('getPositionForAddress', location);
             },
             onAddNewLocation: function (address, name, position, bounds){
                 var newLocation = {
