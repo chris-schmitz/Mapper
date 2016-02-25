@@ -92,6 +92,7 @@
                     this.location.position,
                     this.bestViewedByTheseBounds
                 );
+                this.resetWindow();
             },
             lookupLocationData: function (){
                 this.maskWindow();
@@ -115,7 +116,6 @@
             unmaskWindow: function (){
             },
             resetWindow: function (){
-                debugger;
                 this.$data = initialState();
             }
         }
