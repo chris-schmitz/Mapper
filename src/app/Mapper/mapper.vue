@@ -4,6 +4,7 @@
 
         .body{
             height:$content-height;
+            overflow:hidden;
         }
 
         .map-container{
@@ -14,13 +15,15 @@
             height:100%;
             padding: 0px;
             background-color: grey;
+            overflow-y: auto;
 
 
-            h3{
+            .header{
                 text-align: center;
                 color:white;
                 margin: 0px;
                 padding: 10px;
+                background-color: $success-color-darker;
             }
         }
     }
@@ -34,7 +37,7 @@
 
         <div class="body">
             <div class="col-sm-3 locations-container">
-                <h3>Saved Locaitons</h3>
+                <h3 class="header">Saved Locations</h3>
                 <cs-location v-for="location in locations" :location="location"></cs-locations>
             </div>
             <div class="col-sm-9 map-container">
