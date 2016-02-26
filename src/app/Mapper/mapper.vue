@@ -47,6 +47,7 @@
 
         <div class="panel-footer">
             <cs-new-location-contributor></cs-new-location-contributor>
+            <button type="button" class="btn btn-primary" @click="showAllPins">Show All Locations</button>
         </div>
     </div>
 </template>
@@ -88,24 +89,56 @@
         },
         events:{
             addNewLocation: 'onAddNewLocation',
-            // this is just a way for the locations component to talk to the
+            mapToolsReady: 'onMapToolsReady',
+
+            // these are just a way for the locations component to talk to the
             // map component so we're just handling it with a quick closure vs
             // abstracting it out to it's own method.
-            sendLookupLocationRequest: function (address){
-                this.$broadcast('sendLookupLocationRequest', address);
+            sendLookupLocationRequest: function (lookupPayload){
+            // sendLookupLocationRequest: function (address, successCallbackEventName, failureCallbackEventName){
+                this.$broadcast('sendLookupLocationRequest', lookupPayload);
             },
             triggerLocationDisplay: function (location){
                 this.$broadcast('showLocation', location);
             },
-            failedLocationLookup: function (){
+            failedGeocodeLookupForNewLocation: function (){
                 this.$broadcast('failedLocationLookup');
             },
-            successfulLocationLookup: function (result){
+            successfulGeocodeLookupForNewLocation: function (result){
                 this.$broadcast('successfulLocationLookup', result);
+            },
+            failedGeocodeLookupForExistingLocation: function (location){
+                // handle failure
+            },
+            successfulGeocodeLookupForExistingLocation: function (result, location){
+                location.position = result[0].geometry.location;
+            },
+
+            setPositionForLocation: function (result, location){
+                debugger;
+                location.position = result[0].geometry.location;
             }
         },
         methods: {
+            onMapToolsReady:function (){
+                debugger;
+                // promise, once all pins are loaded then place on map and center
+                this.locations.forEach(function (location){
+                    var position = this.$broadcast('sendLookupLocationRequest',
+                        location.address,
+                        'successfulGeocodeLookupForExistingLocation',
+                        'failedGeocodeLookupForExistingLocation',
+                        location
+                    );
+                    this.location.position = position;
+                },this);
             },
+            showAllPins: function (){
+                this.$broadcast('centerMap');
+            },
+            // getPositionForAddress: function (location){
+            //     return this.$broadcast('getPositionForAddress', location);
+            // },
             onAddNewLocation: function (address, name, position, bounds){
                 var newLocation = {
                     address: address,

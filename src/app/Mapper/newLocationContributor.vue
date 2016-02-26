@@ -1,9 +1,9 @@
 <style lang="sass">
-#newLocationWindow{
-    .btn{
-        width: 80px;
+    #newLocationWindow{
+        .btn{
+            width: 80px;
+        }
     }
-}
 </style>
 
 <template>
@@ -96,7 +96,13 @@
             },
             lookupLocationData: function (){
                 this.maskWindow();
-                this.$dispatch('sendLookupLocationRequest', this.location.address);
+                var lookupPayload = {
+                    address: this.location.address, // the address to geocode to lookup
+                    successCallbackEventName:'successfulGeocodeLookupForNewLocation', // the name of the passthrough event in the parent component
+                    failureCallbackEventName:'failedGeocodeLookupForNewLocation' // the name of the passthrough event in the parent component
+                    location: null
+                };
+                this.$dispatch( 'sendLookupLocationRequest', lookupPayload);
             },
             onSuccessfulLocationLookup: function (result){
                 this.modalBodyDisplay = 'confirmGeocodedValue';

@@ -25,11 +25,6 @@
                 geocoder: null
             }
         },
-        events:{
-            showLocation: 'onShowLocation',
-            placeLocationOnMap: 'onPlaceLocationOnMap',
-            sendLookupLocationRequest: 'onSendLookupLocationRequest'
-        },
         created: function (){
             var GoogleMapsLoader = require('google-maps');
             GoogleMapsLoader.KEY = 'AIzaSyCNlgjm4ISAra17hpfBebbp2vlWMD3v3uc'
@@ -50,18 +45,28 @@
                     this.map = new google.maps.Map(el, options);
                     this.geocoder = new google.maps.Geocoder;
 
-                    this.setLocationMarkers();
-                    this.centerMap();
+                    this.mapReady();
                 }).bind(this)
             );
         },
+        events:{
+            showLocation: 'onShowLocation',
+            placeLocationOnMap: 'onPlaceLocationOnMap',
+            sendLookupLocationRequest: 'onSendLookupLocationRequest',
+            setLocationMarkers: 'onSetLocationMarkers',
+            centerMap: 'onCenterMap'
+        },
         methods:{
-            setLocationMarkers: function (){
+            mapReady: function (){
+                this.$dispatch('mapToolsReady');
+            },
+            onSetLocationMarkers: function (){
                 this.locations.forEach(function (location){
                     this.addMarker(location.position, 'test');
                 },this);
             },
-            centerMap: function (){
+            onCenterMap: function (){
+                // debugger;
                 var lowestLatitude = this.locations.reduce(function (carry, nextLocation, index){
                         // leaving this in for a good demo on looking at functional programming
                         // console.group('index: ' + index);
@@ -118,13 +123,16 @@
                     this.panAndZoomToPin(bounds);
                 }
             },
-            onSendLookupLocationRequest: function (address){
-                this.geocoder.geocode({ address: address }, (function (result){
-                    // unmask window
+            onSendLookupLocationRequest: function (lookupPayload){
+                debugger;
+                // note that this method can be invoked from multiple components that
+                // will have different event linsteners. That's why we need to specify
+                // what callback event name to use.
+                this.geocoder.geocode({ address: lookupPayload.adress }, (function (result){
                     if (result.length === 0){
-                        this.$dispatch('failedLocationLookup');
+                        this.$dispatch(lookupPayload.failureCallbackEventName, lookupPayload.location);
                     } else {
-                        this.$dispatch('successfulLocationLookup', result);
+                        this.$dispatch(lookupPayload.successCallbackEventName, result, lookupPayload.location);
                     }
 
                 }).bind(this));

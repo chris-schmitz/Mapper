@@ -3,6 +3,9 @@
     @import "sass/square-button.scss";
 
     .cs-locations{
+        width: 100%;
+        min-height: 80px;
+        margin-top: 2px;
         white-space: normal;
         @include square-button();
     }
@@ -24,8 +27,13 @@
                 test: 'From Location component'
             }
         },
+        events:{
+            pressLocationButton: 'onPressLocationButton'
         },
         methods:{
+            onPressLocationButton: function (){
+                // if this is the location, press the button
+            },
             onLocationClick: function (){
                 this.$dispatch('triggerLocationDisplay', this.location);
                 // trigger the info popover for the location

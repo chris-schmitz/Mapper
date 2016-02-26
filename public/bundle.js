@@ -10228,7 +10228,7 @@ exports.insert = function (css) {
 }
 
 },{}],6:[function(require,module,exports){
-var __vueify_style__ = require("vueify-insert-css").insert("/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 5, stdin */\n.cs-locations {\n  white-space: normal;\n  -webkit-border-radius: 0 !important;\n  -moz-border-radius: 0 !important;\n  -ms-border-radius: 0 !important;\n  border-radius: 0 !important; }\n")
+var __vueify_style__ = require("vueify-insert-css").insert("/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 5, stdin */\n.cs-locations {\n  width: 100%;\n  min-height: 80px;\n  margin-top: 2px;\n  white-space: normal;\n  -webkit-border-radius: 0 !important;\n  -moz-border-radius: 0 !important;\n  -ms-border-radius: 0 !important;\n  border-radius: 0 !important; }\n")
 'use strict';
 
 module.exports = {
@@ -10260,7 +10260,7 @@ if (module.hot) {(function () {  module.hot.accept()
   if (!hotAPI.compatible) return
   var id = "/Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/location.vue"
   module.hot.dispose(function () {
-    require("vueify-insert-css").cache["/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 5, stdin */\n.cs-locations {\n  white-space: normal;\n  -webkit-border-radius: 0 !important;\n  -moz-border-radius: 0 !important;\n  -ms-border-radius: 0 !important;\n  border-radius: 0 !important; }\n"] = false
+    require("vueify-insert-css").cache["/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 5, stdin */\n.cs-locations {\n  width: 100%;\n  min-height: 80px;\n  margin-top: 2px;\n  white-space: normal;\n  -webkit-border-radius: 0 !important;\n  -moz-border-radius: 0 !important;\n  -ms-border-radius: 0 !important;\n  border-radius: 0 !important; }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -10282,11 +10282,6 @@ module.exports = {
             geocoder: null
         };
     },
-    events: {
-        showLocation: 'onShowLocation',
-        placeLocationOnMap: 'onPlaceLocationOnMap',
-        sendLookupLocationRequest: 'onSendLookupLocationRequest'
-    },
     created: function created() {
         var GoogleMapsLoader = require('google-maps');
         GoogleMapsLoader.KEY = 'AIzaSyCNlgjm4ISAra17hpfBebbp2vlWMD3v3uc';
@@ -10307,17 +10302,27 @@ module.exports = {
             this.map = new google.maps.Map(el, options);
             this.geocoder = new google.maps.Geocoder();
 
-            this.setLocationMarkers();
-            this.centerMap();
+            this.mapReady();
         }.bind(this));
     },
+    events: {
+        showLocation: 'onShowLocation',
+        placeLocationOnMap: 'onPlaceLocationOnMap',
+        sendLookupLocationRequest: 'onSendLookupLocationRequest',
+        setLocationMarkers: 'onSetLocationMarkers',
+        centerMap: 'onCenterMap'
+    },
     methods: {
-        setLocationMarkers: function setLocationMarkers() {
+        mapReady: function mapReady() {
+            this.$dispatch('mapToolsReady');
+        },
+        onSetLocationMarkers: function onSetLocationMarkers() {
             this.locations.forEach(function (location) {
                 this.addMarker(location.position, 'test');
             }, this);
         },
-        centerMap: function centerMap() {
+        onCenterMap: function onCenterMap() {
+            // debugger;
             var lowestLatitude = this.locations.reduce(function (carry, nextLocation, index) {
                 // leaving this in for a good demo on looking at functional programming
                 // console.group('index: ' + index);
@@ -10374,13 +10379,16 @@ module.exports = {
                 this.panAndZoomToPin(bounds);
             }
         },
-        onSendLookupLocationRequest: function onSendLookupLocationRequest(address) {
-            this.geocoder.geocode({ address: address }, function (result) {
-                // unmask window
+        onSendLookupLocationRequest: function onSendLookupLocationRequest(lookupPayload) {
+            debugger;
+            // note that this method can be invoked from multiple components that
+            // will have different event linsteners. That's why we need to specify
+            // what callback event name to use.
+            this.geocoder.geocode({ address: lookupPayload.adress }, function (result) {
                 if (result.length === 0) {
-                    this.$dispatch('failedLocationLookup');
+                    this.$dispatch(lookupPayload.failureCallbackEventName, lookupPayload.location);
                 } else {
-                    this.$dispatch('successfulLocationLookup', result);
+                    this.$dispatch(lookupPayload.successCallbackEventName, result, lookupPayload.location);
                 }
             }.bind(this));
         }
@@ -10404,7 +10412,7 @@ if (module.hot) {(function () {  module.hot.accept()
   }
 })()}
 },{"google-maps":2,"vue":4,"vue-hot-reload-api":3,"vueify-insert-css":5}],8:[function(require,module,exports){
-var __vueify_style__ = require("vueify-insert-css").insert("/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 5, stdin */\n.cs-mapper .body {\n  height: 500px; }\n\n/* line 9, stdin */\n.cs-mapper .map-container {\n  padding: 0px; }\n\n/* line 13, stdin */\n.cs-mapper .locations-container {\n  height: 100%;\n  padding: 0px;\n  background-color: grey; }\n  /* line 19, stdin */\n  .cs-mapper .locations-container h3 {\n    text-align: center;\n    color: white;\n    margin: 0px;\n    padding: 10px; }\n")
+var __vueify_style__ = require("vueify-insert-css").insert("/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 5, stdin */\n.cs-mapper .body {\n  height: 500px;\n  overflow: hidden; }\n\n/* line 10, stdin */\n.cs-mapper .map-container {\n  padding: 0px; }\n\n/* line 14, stdin */\n.cs-mapper .locations-container {\n  height: 100%;\n  padding: 0px;\n  background-color: grey;\n  overflow-y: auto; }\n  /* line 21, stdin */\n  .cs-mapper .locations-container .header {\n    text-align: center;\n    color: white;\n    margin: 0px;\n    padding: 10px;\n    background-color: #a4d48d; }\n")
 'use strict';
 
 var location = require('./location.vue');
@@ -10439,26 +10447,51 @@ module.exports = {
     },
     events: {
         addNewLocation: 'onAddNewLocation',
-        // this is just a way for the locations component to talk to the
+        mapToolsReady: 'onMapToolsReady',
+
+        // these are just a way for the locations component to talk to the
         // map component so we're just handling it with a quick closure vs
         // abstracting it out to it's own method.
-        sendLookupLocationRequest: function sendLookupLocationRequest(address) {
-            this.$broadcast('sendLookupLocationRequest', address);
+        sendLookupLocationRequest: function sendLookupLocationRequest(lookupPayload) {
+            // sendLookupLocationRequest: function (address, successCallbackEventName, failureCallbackEventName){
+            this.$broadcast('sendLookupLocationRequest', lookupPayload);
         },
         triggerLocationDisplay: function triggerLocationDisplay(location) {
             this.$broadcast('showLocation', location);
         },
-        failedLocationLookup: function failedLocationLookup() {
+        failedGeocodeLookupForNewLocation: function failedGeocodeLookupForNewLocation() {
             this.$broadcast('failedLocationLookup');
         },
-        successfulLocationLookup: function successfulLocationLookup(result) {
+        successfulGeocodeLookupForNewLocation: function successfulGeocodeLookupForNewLocation(result) {
             this.$broadcast('successfulLocationLookup', result);
+        },
+        failedGeocodeLookupForExistingLocation: function failedGeocodeLookupForExistingLocation(location) {
+            // handle failure
+        },
+        successfulGeocodeLookupForExistingLocation: function successfulGeocodeLookupForExistingLocation(result, location) {
+            location.position = result[0].geometry.location;
+        },
+
+        setPositionForLocation: function setPositionForLocation(result, location) {
+            debugger;
+            location.position = result[0].geometry.location;
         }
     },
     methods: {
-        getPositionForAddress: function getPositionForAddress(location) {
-            return this.$broadcast('getPositionForAddress', location);
+        onMapToolsReady: function onMapToolsReady() {
+            debugger;
+            // promise, once all pins are loaded then place on map and center
+            this.locations.forEach(function (location) {
+                var position = this.$broadcast('sendLookupLocationRequest', location.address, 'successfulGeocodeLookupForExistingLocation', 'failedGeocodeLookupForExistingLocation', location);
+                this.location.position = position;
+            }, this);
         },
+        showAllPins: function showAllPins() {
+            this.$broadcast('centerMap');
+        },
+        // getPositionForAddress: function (location){
+        //     return this.$broadcast('getPositionForAddress', location);
+        // },
         onAddNewLocation: function onAddNewLocation(address, name, position, bounds) {
             var newLocation = {
                 address: address,
@@ -10480,14 +10513,14 @@ module.exports = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"panel panel-success cs-mapper\">\n    <div class=\"panel-heading\">\n        <h1>Mapper</h1>\n    </div>\n\n    <div class=\"body\">\n        <div class=\"col-sm-3 locations-container\">\n            <h3>Saved Locaitons</h3>\n            <cs-location v-for=\"location in locations\" :location=\"location\">\n        </cs-location></div>\n        <div class=\"col-sm-9 map-container\">\n            <cs-map :locations=\"locations\"></cs-map>\n        </div>\n    </div>\n\n    <div class=\"panel-footer\">\n        <cs-new-location-contributor></cs-new-location-contributor>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"panel panel-success cs-mapper\">\n    <div class=\"panel-heading\">\n        <h1>Mapper</h1>\n    </div>\n\n    <div class=\"body\">\n        <div class=\"col-sm-3 locations-container\">\n            <h3 class=\"header\">Saved Locations</h3>\n            <cs-location v-for=\"location in locations\" :location=\"location\">\n        </cs-location></div>\n        <div class=\"col-sm-9 map-container\">\n            <cs-map :locations=\"locations\"></cs-map>\n        </div>\n    </div>\n\n    <div class=\"panel-footer\">\n        <cs-new-location-contributor></cs-new-location-contributor>\n        <button type=\"button\" class=\"btn btn-primary\" @click=\"showAllPins\">Show All Locations</button>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   var id = "/Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/mapper.vue"
   module.hot.dispose(function () {
-    require("vueify-insert-css").cache["/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 5, stdin */\n.cs-mapper .body {\n  height: 500px; }\n\n/* line 9, stdin */\n.cs-mapper .map-container {\n  padding: 0px; }\n\n/* line 13, stdin */\n.cs-mapper .locations-container {\n  height: 100%;\n  padding: 0px;\n  background-color: grey; }\n  /* line 19, stdin */\n  .cs-mapper .locations-container h3 {\n    text-align: center;\n    color: white;\n    margin: 0px;\n    padding: 10px; }\n"] = false
+    require("vueify-insert-css").cache["/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 5, stdin */\n.cs-mapper .body {\n  height: 500px;\n  overflow: hidden; }\n\n/* line 10, stdin */\n.cs-mapper .map-container {\n  padding: 0px; }\n\n/* line 14, stdin */\n.cs-mapper .locations-container {\n  height: 100%;\n  padding: 0px;\n  background-color: grey;\n  overflow-y: auto; }\n  /* line 21, stdin */\n  .cs-mapper .locations-container .header {\n    text-align: center;\n    color: white;\n    margin: 0px;\n    padding: 10px;\n    background-color: #a4d48d; }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -10535,10 +10568,14 @@ module.exports = {
             // is there a way we can do this with vue instead of jquery?
             $('#newLocationWindow').modal('hide');
             this.$dispatch('addNewLocation', this.location.address, this.location.name, this.location.position, this.bestViewedByTheseBounds);
+            this.resetWindow();
         },
         lookupLocationData: function lookupLocationData() {
             this.maskWindow();
-            this.$dispatch('sendLookupLocationRequest', this.location.address);
+            this.$dispatch('sendLookupLocationRequest', this.location.address, // the address to geocode to lookup
+            'successfulGeocodeLookupForNewLocation', // the name of the passthrough event in the parent component
+            'failedGeocodeLookupForNewLocation' // the name of the passthrough event in the parent component
+            );
         },
         onSuccessfulLocationLookup: function onSuccessfulLocationLookup(result) {
             this.modalBodyDisplay = 'confirmGeocodedValue';
@@ -10556,7 +10593,6 @@ module.exports = {
         maskWindow: function maskWindow() {},
         unmaskWindow: function unmaskWindow() {},
         resetWindow: function resetWindow() {
-            debugger;
             this.$data = initialState();
         }
     }
