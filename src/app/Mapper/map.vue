@@ -7,13 +7,12 @@
 </style>
 
 <template>
-    <div id="map" class="">
+    <div id="map">
         {{ placeholderText }}
     </div>
 </template>
 
 <script>
-
     module.exports = {
         props:[
             'locations'
@@ -27,7 +26,7 @@
         },
         created: function (){
             var GoogleMapsLoader = require('google-maps');
-            GoogleMapsLoader.KEY = 'AIzaSyCNlgjm4ISAra17hpfBebbp2vlWMD3v3uc'
+            GoogleMapsLoader.KEY = 'AIzaSyCNlgjm4ISAra17hpfBebbp2vlWMD3v3uc';
 
             GoogleMapsLoader.load(
                 // note, we're wrapping all of this in parenthesis so that we
@@ -50,23 +49,18 @@
             );
         },
         events:{
-            showLocation: 'onShowLocation',
-            placeLocationOnMap: 'onPlaceLocationOnMap',
-            sendLookupLocationRequest: 'onSendLookupLocationRequest',
-            setLocationMarkers: 'onSetLocationMarkers',
-            centerMap: 'onCenterMap'
+            placeLocationOnMap: ['addMarker', 'panAndZoomToPin'],
+            centerMap: 'onCenterMap',
+            locationsGeocoded: 'onLocationsGeocoded'
         },
         methods:{
             mapReady: function (){
-                this.$dispatch('mapToolsReady');
-            },
-            onSetLocationMarkers: function (){
-                this.locations.forEach(function (location){
-                    this.addMarker(location.position, 'test');
+                var markerPromises = this.locations.map(function (location){
+                    return this.makeAGeocodePromise(location);
                 },this);
+                this.retreiveGeocodeResults(markerPromises);
             },
             onCenterMap: function (){
-                // debugger;
                 var lowestLatitude = this.locations.reduce(function (carry, nextLocation, index){
                         // leaving this in for a good demo on looking at functional programming
                         // console.group('index: ' + index);
@@ -88,7 +82,7 @@
                 }, null);
 
                 var highestLatitude = this.locations.reduce(function (carry, nextLocation, index){
-                        return carry > nextLocation.position.lng && carry !== null ? carry : nextLocation.position.lat;
+                        return carry > nextLocation.position.lat && carry !== null ? carry : nextLocation.position.lat;
                 }, null);
 
                 var highestLongitude = this.locations.reduce(function (carry, nextLocation, index){
@@ -103,40 +97,43 @@
             panAndZoomToPin: function (bounds){
                 this.map.fitBounds(bounds)
             },
-            onShowLocation: function (location){
-                console.log(location);
-                // triggered when
-                //      a user clicks on a location button in the nav
-                //      ?
-                // show the location details popover
-                // pan to that location on the map
-            },
             addMarker: function (position, label){
                 var marker = new google.maps.Marker({
                     position: position,
                     map: this.map
                 });
             },
-            onPlaceLocationOnMap: function (location, bounds){
-                this.addMarker(location.position);
-                if(bounds !== null){
-                    this.panAndZoomToPin(bounds);
-                }
+            makeAGeocodePromise: function (location){
+                return new Promise(
+                    (function (resolve, reject){
+                        this.geocoder.geocode({address: location.address}, function (result){
+                            if(result !== undefined){
+                                var payload = {
+                                    locationInstance: location,
+                                    geocodeResults: result[0]
+                                };
+                                resolve(payload);
+                            } else {
+                                reject( new Error(result) );
+                            }
+                        });
+                    }).bind(this)
+                );
             },
-            onSendLookupLocationRequest: function (lookupPayload){
-                debugger;
-                // note that this method can be invoked from multiple components that
-                // will have different event linsteners. That's why we need to specify
-                // what callback event name to use.
-                this.geocoder.geocode({ address: lookupPayload.adress }, (function (result){
-                    if (result.length === 0){
-                        this.$dispatch(lookupPayload.failureCallbackEventName, lookupPayload.location);
-                    } else {
-                        this.$dispatch(lookupPayload.successCallbackEventName, result, lookupPayload.location);
-                    }
-
-                }).bind(this));
-
+            retreiveGeocodeResults: function (locationPromises){
+                Promise.all(locationPromises).then(
+                    (function (resultPayload){
+                        this.$emit('locationsGeocoded', resultPayload);
+                    }).bind(this)
+                ).catch(function (error){
+                    console.log(error);
+                });
+            },
+            onLocationsGeocoded: function (resultPayload){
+                resultPayload.forEach(function (result){
+                    this.addMarker(result.locationInstance.position, result.locationInstance.name);
+                }, this);
+                this.$emit('centerMap');
             }
         }
     }
