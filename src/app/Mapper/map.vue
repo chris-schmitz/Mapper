@@ -49,17 +49,56 @@
             );
         },
         events:{
-            placeLocationOnMap: ['addMarker', 'panAndZoomToPin'],
+            // ============================================================= //
+            // External Use
+
+            // $broadcast this event to geocode an address. When you broadcast
+            // this event you should include the following event listeners
+            // to receive the results:
+            // "successfulGeocode"
+            // "failedGeocode"
+            geocodeAnAddress: 'onGeocodeAnAddress',
+
+            // When $broadcast-ing this event, you should pass in an object
+            // containing the following properties:
+            // {
+            //     position: ... , // The geocoded LatLng object for the location
+            //     label: ..., // The label to use on the marker (under construction)
+            //     bounds: ... // The LatLngBounds class to apply to the map
+            // }
+            placeLocationOnMap: ['addMarker', 'onPanAndZoomToBounds'],
+            // ============================================================= //
+
+            // ============================================================= //
+            // Manipulate Map (intended for external and internal use)
             centerMap: 'onCenterMap',
-            locationsGeocoded: 'onLocationsGeocoded'
+            panAndZoomToBounds: 'onPanAndZoomToBounds',
+            // ============================================================= //
+
+            // ============================================================= //
+            // Internal use
+            // Used by the Map component after map is ready. It's used to
+            // place the markers on the map.
+            successfulGeocode: 'initialPlacementOfMarkers',
+            failedGeocode: 'onFailedGeocode',
+            // ============================================================= //
+
         },
         methods:{
-            mapReady: function (){
-                var markerPromises = this.locations.map(function (location){
-                    return this.makeAGeocodePromise(location);
-                },this);
-                this.retreiveGeocodeResults(markerPromises);
+
+            // ============================================================= //
+            // External access
+            onGeocodeAnAddress: function (address){
+                var location = {
+                    address: address
+                };
+                var promise = this.makeAGeocodePromise(location);
+                this.retreiveGeocodeResults(promise, 'dispatch');
             },
+            // ============================================================= //
+
+            // ============================================================= //
+            // Interacting with the map
             onCenterMap: function (){
                 var lowestLatitude = this.locations.reduce(function (carry, nextLocation, index){
                         // leaving this in for a good demo on looking at functional programming
@@ -94,15 +133,40 @@
                 var bounds = new google.maps.LatLngBounds(southWest, northEast);
                 this.map.fitBounds(bounds);
             },
-            panAndZoomToPin: function (bounds){
-                this.map.fitBounds(bounds)
+            onPanAndZoomToBounds: function (markerPayload){
+                this.map.fitBounds(markerPayload.bounds)
             },
-            addMarker: function (position, label){
+            addMarker: function (markerPayload){
                 var marker = new google.maps.Marker({
-                    position: position,
+                    position: markerPayload.position,
                     map: this.map
                 });
             },
+            // ============================================================= //
+
+            // ============================================================= //
+            // Internal tools
+
+            mapReady: function (){
+                var markerPromises = this.locations.map(function (location){
+                    return this.makeAGeocodePromise(location);
+                },this);
+                this.retreiveGeocodeResults(markerPromises, 'emit');
+            },
+            initialPlacementOfMarkers: function (resultPayload){
+                resultPayload.forEach(function (result){
+                    var markerPayload = {
+                        position: result.locationInstance.position,
+                        label: result.locationInstance.name
+                    }
+                    this.addMarker(markerPayload);
+                }, this);
+                this.$emit('centerMap');
+            },
+            onFailedGeocode: function (error){
+                console.log(error);
+            },
+
             makeAGeocodePromise: function (location){
                 return new Promise(
                     (function (resolve, reject){
@@ -120,21 +184,26 @@
                     }).bind(this)
                 );
             },
-            retreiveGeocodeResults: function (locationPromises){
+            retreiveGeocodeResults: function (locationPromises, transmissionMethod){
                 Promise.all(locationPromises).then(
                     (function (resultPayload){
-                        this.$emit('locationsGeocoded', resultPayload);
+                        if(transmissionMethod === 'emit'){
+                            this.$emit('successfulGeocode', resultPayload);
+                        } else if (transmissionMethod === 'dispatch') {
+                            this.$dispatch('successfulGeocode', resultPayload);
+                        }
                     }).bind(this)
-                ).catch(function (error){
-                    console.log(error);
-                });
-            },
-            onLocationsGeocoded: function (resultPayload){
-                resultPayload.forEach(function (result){
-                    this.addMarker(result.locationInstance.position, result.locationInstance.name);
-                }, this);
-                this.$emit('centerMap');
+                ).catch(
+                    (function (error){
+                        if(transmissionMethod === 'emit'){
+                            this.$emit('failedGeocode', error);
+                        } else if (transmissionMethod === 'dispatch') {
+                            this.$dispatch('failedGeocode', error);
+                        }
+                    }).bind(this)
+                );
             }
+            // ============================================================= //
         }
     }
 </script>
