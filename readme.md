@@ -2,7 +2,7 @@
 
 # Mapper
 
-![mapper demo](Animated gif of mapper working)
+![mapper demo](readmeAttachments/mapperdemo.gif)
 
 This is a demo file I'm using to prototype the interaction between a vue.js app and a google map instance.
 
