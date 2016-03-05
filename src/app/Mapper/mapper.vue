@@ -14,7 +14,7 @@
         .locations-container{
             height:100%;
             padding: 0px;
-            background-color: grey;
+            background-color: $app-gray-darker;
             overflow-y: auto;
 
 

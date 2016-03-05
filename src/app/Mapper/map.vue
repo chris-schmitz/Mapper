@@ -3,6 +3,7 @@
     #map{
         height: $content-height;
         width: 100%;
+        background-color:$app-gray-darker;
     }
 </style>
 

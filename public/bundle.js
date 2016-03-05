@@ -11275,7 +11275,7 @@ if (module.hot) {(function () {  module.hot.accept()
   }
 })()}
 },{"vue":59,"vue-hot-reload-api":58,"vueify-insert-css":60}],62:[function(require,module,exports){
-var __vueify_style__ = require("vueify-insert-css").insert("/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 3, stdin */\n#map {\n  height: 500px;\n  width: 100%; }\n")
+var __vueify_style__ = require("vueify-insert-css").insert("/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 3, stdin */\n#map {\n  height: 500px;\n  width: 100%;\n  background-color: #c2c2c2; }\n")
 'use strict';
 
 var _promise = require('babel-runtime/core-js/promise');
@@ -11494,7 +11494,7 @@ if (module.hot) {(function () {  module.hot.accept()
   if (!hotAPI.compatible) return
   var id = "/Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/map.vue"
   module.hot.dispose(function () {
-    require("vueify-insert-css").cache["/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 3, stdin */\n#map {\n  height: 500px;\n  width: 100%; }\n"] = false
+    require("vueify-insert-css").cache["/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 3, stdin */\n#map {\n  height: 500px;\n  width: 100%;\n  background-color: #c2c2c2; }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -11504,7 +11504,7 @@ if (module.hot) {(function () {  module.hot.accept()
   }
 })()}
 },{"babel-runtime/core-js/promise":1,"google-maps":57,"vue":59,"vue-hot-reload-api":58,"vueify-insert-css":60}],63:[function(require,module,exports){
-var __vueify_style__ = require("vueify-insert-css").insert("/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 5, stdin */\n.cs-mapper .body {\n  height: 500px;\n  overflow: hidden; }\n\n/* line 10, stdin */\n.cs-mapper .map-container {\n  padding: 0px; }\n\n/* line 14, stdin */\n.cs-mapper .locations-container {\n  height: 100%;\n  padding: 0px;\n  background-color: grey;\n  overflow-y: auto; }\n  /* line 21, stdin */\n  .cs-mapper .locations-container .header {\n    text-align: center;\n    color: white;\n    margin: 0px;\n    padding: 10px;\n    background-color: #a4d48d; }\n")
+var __vueify_style__ = require("vueify-insert-css").insert("/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 5, stdin */\n.cs-mapper .body {\n  height: 500px;\n  overflow: hidden; }\n\n/* line 10, stdin */\n.cs-mapper .map-container {\n  padding: 0px; }\n\n/* line 14, stdin */\n.cs-mapper .locations-container {\n  height: 100%;\n  padding: 0px;\n  background-color: #c2c2c2;\n  overflow-y: auto; }\n  /* line 21, stdin */\n  .cs-mapper .locations-container .header {\n    text-align: center;\n    color: white;\n    margin: 0px;\n    padding: 10px;\n    background-color: #a4d48d; }\n")
 'use strict';
 
 var _promise = require('babel-runtime/core-js/promise');
@@ -11620,7 +11620,7 @@ if (module.hot) {(function () {  module.hot.accept()
   if (!hotAPI.compatible) return
   var id = "/Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/mapper.vue"
   module.hot.dispose(function () {
-    require("vueify-insert-css").cache["/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 5, stdin */\n.cs-mapper .body {\n  height: 500px;\n  overflow: hidden; }\n\n/* line 10, stdin */\n.cs-mapper .map-container {\n  padding: 0px; }\n\n/* line 14, stdin */\n.cs-mapper .locations-container {\n  height: 100%;\n  padding: 0px;\n  background-color: grey;\n  overflow-y: auto; }\n  /* line 21, stdin */\n  .cs-mapper .locations-container .header {\n    text-align: center;\n    color: white;\n    margin: 0px;\n    padding: 10px;\n    background-color: #a4d48d; }\n"] = false
+    require("vueify-insert-css").cache["/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 5, stdin */\n.cs-mapper .body {\n  height: 500px;\n  overflow: hidden; }\n\n/* line 10, stdin */\n.cs-mapper .map-container {\n  padding: 0px; }\n\n/* line 14, stdin */\n.cs-mapper .locations-container {\n  height: 100%;\n  padding: 0px;\n  background-color: #c2c2c2;\n  overflow-y: auto; }\n  /* line 21, stdin */\n  .cs-mapper .locations-container .header {\n    text-align: center;\n    color: white;\n    margin: 0px;\n    padding: 10px;\n    background-color: #a4d48d; }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
