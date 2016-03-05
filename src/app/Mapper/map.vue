@@ -113,21 +113,21 @@
                         //         console.log(nextLocation.position.lat);
                         //     console.groupEnd();
                         // console.groupEnd();
-                        return carry < nextLocation.position.lat && carry !== null ? carry : nextLocation.position.lat;
+                        return carry < nextLocation.position.lat() && carry !== null ? carry : nextLocation.position.lat();
                 // initial starting value, note that this should be null and not
                 // a number like 0 which is a valid lat or lng value.
                 }, null);
 
                 var lowestLongitude = this.locations.reduce(function (carry, nextLocation, index){
-                        return carry < nextLocation.position.lng && carry !== null ? carry : nextLocation.position.lng;
+                        return carry < nextLocation.position.lng() && carry !== null ? carry : nextLocation.position.lng();
                 }, null);
 
                 var highestLatitude = this.locations.reduce(function (carry, nextLocation, index){
-                        return carry > nextLocation.position.lat && carry !== null ? carry : nextLocation.position.lat;
+                        return carry > nextLocation.position.lat() && carry !== null ? carry : nextLocation.position.lat();
                 }, null);
 
                 var highestLongitude = this.locations.reduce(function (carry, nextLocation, index){
-                        return carry > nextLocation.position.lng && carry !== null ? carry : nextLocation.position.lng;
+                        return carry > nextLocation.position.lng() && carry !== null ? carry : nextLocation.position.lng();
                 }, null);
 
                 var southWest = new google.maps.LatLng({ lat: lowestLatitude, lng: lowestLongitude});
@@ -174,6 +174,7 @@
                     (function (resolve, reject){
                         this.geocoder.geocode({address: location.address}, function (result){
                             if(result !== undefined){
+                                location.position = result[0].geometry.location;
                                 var payload = {
                                     locationInstance: location,
                                     geocodeResults: result[0]
@@ -191,7 +192,6 @@
                     (function (resultPayload){
                         if(transmissionMethod === 'emit'){
                             this.$emit('successfulLocalGeocode', resultPayload);
-                            // this.$emit('successfulGeocode', resultPayload);
                         } else if (transmissionMethod === 'dispatch') {
                             this.$dispatch('successfulGeocode', resultPayload);
                         }

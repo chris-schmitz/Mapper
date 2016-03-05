@@ -11377,21 +11377,21 @@ module.exports = {
                 //         console.log(nextLocation.position.lat);
                 //     console.groupEnd();
                 // console.groupEnd();
-                return carry < nextLocation.position.lat && carry !== null ? carry : nextLocation.position.lat;
+                return carry < nextLocation.position.lat() && carry !== null ? carry : nextLocation.position.lat();
                 // initial starting value, note that this should be null and not
                 // a number like 0 which is a valid lat or lng value.
             }, null);
 
             var lowestLongitude = this.locations.reduce(function (carry, nextLocation, index) {
-                return carry < nextLocation.position.lng && carry !== null ? carry : nextLocation.position.lng;
+                return carry < nextLocation.position.lng() && carry !== null ? carry : nextLocation.position.lng();
             }, null);
 
             var highestLatitude = this.locations.reduce(function (carry, nextLocation, index) {
-                return carry > nextLocation.position.lat && carry !== null ? carry : nextLocation.position.lat;
+                return carry > nextLocation.position.lat() && carry !== null ? carry : nextLocation.position.lat();
             }, null);
 
             var highestLongitude = this.locations.reduce(function (carry, nextLocation, index) {
-                return carry > nextLocation.position.lng && carry !== null ? carry : nextLocation.position.lng;
+                return carry > nextLocation.position.lng() && carry !== null ? carry : nextLocation.position.lng();
             }, null);
 
             var southWest = new google.maps.LatLng({ lat: lowestLatitude, lng: lowestLongitude });
@@ -11437,6 +11437,7 @@ module.exports = {
             return new _promise2.default(function (resolve, reject) {
                 this.geocoder.geocode({ address: location.address }, function (result) {
                     if (result !== undefined) {
+                        location.position = result[0].geometry.location;
                         var payload = {
                             locationInstance: location,
                             geocodeResults: result[0]
@@ -11452,10 +11453,9 @@ module.exports = {
             _promise2.default.all(locationPromises).then(function (resultPayload) {
                 if (transmissionMethod === 'emit') {
                     this.$emit('successfulLocalGeocode', resultPayload);
-                    // this.$emit('successfulGeocode', resultPayload);
                 } else if (transmissionMethod === 'dispatch') {
-                        this.$dispatch('successfulGeocode', resultPayload);
-                    }
+                    this.$dispatch('successfulGeocode', resultPayload);
+                }
             }.bind(this)).catch(function (error) {
                 if (transmissionMethod === 'emit') {
                     this.$emit('failedLocalGeocode', error);
@@ -11504,17 +11504,20 @@ module.exports = {
                 id: 1,
                 address: '100 Washington Ave St. Louis MO 63102',
                 name: "Saint Louis Arch",
-                position: { lat: 38.628744, lng: -90.183859 }
+                position: null,
+                placeId: null
             }, {
                 id: 2,
                 address: '2414 Menard St St. Louis MO 63104',
                 name: "BWorks",
-                position: { lat: 38.602778, lng: -90.209273 }
+                position: null,
+                placeId: null
             }, {
                 id: 3,
                 address: '3260 Hampton Ave St.Louis MO 63139',
                 name: "Skeleton Key",
-                position: { lat: 38.602808, lng: -90.291371 }
+                position: null,
+                placeId: null
             }]
         };
     },
@@ -11652,7 +11655,7 @@ module.exports = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button data-toggle=\"modal\" data-target=\"#newLocationWindow\" type=\"button\" class=\"btn btn-success\">New Location</button>\n\n\n<div class=\"modal fade\" id=\"newLocationWindow\" tabindex=\"-1\"> <!-- the lightbox style dark overlay -->\n    <div class=\"modal-dialog\"> <!-- the box around the modal that makes it float(?) -->\n        <div class=\"modal-content modal-content-primary\"> <!-- the start of the actual modal window. From here on it's structured similar to a panel -->\n            <div class=\"modal-header\">\n                <!-- note that they're handling the js actions via the `data-...` tags, not onclick -->\n                <button type=\"button\" class=\"close\" data-dismiss=\"modal\"><span>×</span></button>\n                <h4 class=\"modal-title\">New Location</h4>\n            </div>\n            <div class=\"modal-body\">\n                <div v-show=\"modalBodyDisplay === &quot;getUserInput&quot;\">\n                    <form>\n                        <div class=\"form-group\" :class=\"{ 'has-error': location.hasError }\">\n                            <label class=\"control-label\" for=\"address\">Address</label>\n                            <input type=\"text\" v-model=\"location.address\" class=\"form-control\" name=\"address\" placeholder=\"123 Main St\">\n                        </div>\n                        <div class=\"form-group\">\n                            <label class=\"control-label\" for=\"name\">Description</label>\n                            <input type=\"text\" v-model=\"location.name\" class=\"form-control\" name=\"name\" placeholder=\"(Optional)\">\n                        </div>\n                    </form>\n                </div>\n                <div v-show=\"modalBodyDisplay === &quot;confirmGeocodedValue&quot;\">\n                    <div class=\"confirmation-label\">\n                        Place this address on the map?\n                    </div>\n                     <b>{{ addressToConfirm }}</b>\n                </div>\n            </div>\n            <div class=\"modal-footer\">\n                <button type=\"button\" @click=\"resetWindow\" class=\"btn btn-default\" data-dismiss=\"modal\">Cancel</button>\n                <!-- notice that here they're NOT using the `data-...` attribute to do anything, here's where we can hook in to\n                do whatever save stuff we want -->\n                <button type=\"button\" @click=\"submitClick\" class=\"btn btn-success\">{{ submitButtonText }}</button>\n            </div>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button data-toggle=\"modal\" data-target=\"#newLocationWindow\" type=\"button\" class=\"btn btn-success\">New Location</button>\n\n\n<div class=\"modal fade\" id=\"newLocationWindow\" tabindex=\"-1\"> <!-- the lightbox style dark overlay -->\n    <div class=\"modal-dialog\"> <!-- the box around the modal that makes it float(?) -->\n        <div class=\"modal-content modal-content-primary\"> <!-- the start of the actual modal window. From here on it's structured similar to a panel -->\n            <div class=\"modal-header\">\n                <!-- note that they're handling the js actions via the `data-...` tags, not onclick -->\n                <button type=\"button\" class=\"close\" data-dismiss=\"modal\"><span>×</span></button>\n                <h4 class=\"modal-title\">New Location</h4>\n            </div>\n            <div class=\"modal-body\">\n                <div v-show=\"modalBodyDisplay === &quot;getUserInput&quot;\">\n                    <form>\n                        <div class=\"form-group\" :class=\"{ 'has-error': location.hasError }\">\n                            <label class=\"control-label\" for=\"address\">Address</label>\n                            <input type=\"text\" v-model=\"location.address\" class=\"form-control\" name=\"address\" placeholder=\"e.g. 123 Main St\">\n                        </div>\n                        <div class=\"form-group\">\n                            <label class=\"control-label\" for=\"name\">Label for Location Button</label>\n                            <input type=\"text\" v-model=\"location.name\" class=\"form-control\" name=\"name\" placeholder=\"e.g. Town Hall\">\n                        </div>\n                    </form>\n                </div>\n                <div v-show=\"modalBodyDisplay === &quot;confirmGeocodedValue&quot;\">\n                    <div class=\"confirmation-label\">\n                        Place this address on the map?\n                    </div>\n                     <b>{{ addressToConfirm }}</b>\n                </div>\n            </div>\n            <div class=\"modal-footer\">\n                <button type=\"button\" @click=\"resetWindow\" class=\"btn btn-default\" data-dismiss=\"modal\">Cancel</button>\n                <!-- notice that here they're NOT using the `data-...` attribute to do anything, here's where we can hook in to\n                do whatever save stuff we want -->\n                <button type=\"button\" @click=\"submitClick\" class=\"btn btn-success\">{{ submitButtonText }}</button>\n            </div>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)

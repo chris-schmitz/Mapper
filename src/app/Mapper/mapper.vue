@@ -70,19 +70,22 @@
                         id: 1,
                         address: '100 Washington Ave St. Louis MO 63102',
                         name: "Saint Louis Arch",
-                        position: {lat: 38.628744, lng: -90.183859}
+                        position: null,
+                        placeId: null
                     },
                     {
                         id: 2,
                         address: '2414 Menard St St. Louis MO 63104',
                         name: "BWorks",
-                        position: {lat: 38.602778, lng: -90.209273}
+                        position: null,
+                        placeId: null
                     },
                     {
                         id: 3,
                         address: '3260 Hampton Ave St.Louis MO 63139',
                         name: "Skeleton Key",
-                        position: {lat: 38.602808, lng: -90.291371}
+                        position: null,
+                        placeId: null
                     }
                 ]
             }

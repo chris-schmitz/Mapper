@@ -23,11 +23,11 @@
                         <form>
                             <div class="form-group" :class="{ 'has-error': location.hasError }">
                                 <label class="control-label" for="address">Address</label>
-                                <input type="text" v-model="location.address" class="form-control" name="address" placeholder="123 Main St">
+                                <input type="text" v-model="location.address" class="form-control" name="address" placeholder="e.g. 123 Main St">
                             </div>
                             <div class="form-group">
-                                <label class="control-label" for="name">Description</label>
-                                <input type="text" v-model="location.name" class="form-control" name="name" placeholder="(Optional)">
+                                <label class="control-label" for="name">Label for Location Button</label>
+                                <input type="text" v-model="location.name" class="form-control" name="name" placeholder="e.g. Town Hall">
                             </div>
                         </form>
                     </div>
