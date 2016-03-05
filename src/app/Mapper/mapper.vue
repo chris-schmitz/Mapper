@@ -89,64 +89,40 @@
         },
         events:{
             addNewLocation: 'onAddNewLocation',
-            mapToolsReady: 'onMapToolsReady',
 
             // these are just a way for the locations component to talk to the
             // map component so we're just handling it with a quick closure vs
             // abstracting it out to it's own method.
-            sendLookupLocationRequest: function (lookupPayload){
-            // sendLookupLocationRequest: function (address, successCallbackEventName, failureCallbackEventName){
-                this.$broadcast('sendLookupLocationRequest', lookupPayload);
+            geocodeThisAddress: function (address){
+                this.$broadcast('geocodeAnAddress', address);
+            },
+            successfulGeocode: function (resultPayload){
+                this.$broadcast('successfulGeocode', resultPayload);
+            },
+            failedGeocode: function (error){
+                this.$broadcast('failedGeocode', error);
             },
             triggerLocationDisplay: function (location){
                 this.$broadcast('showLocation', location);
-            },
-            failedGeocodeLookupForNewLocation: function (){
-                this.$broadcast('failedLocationLookup');
-            },
-            successfulGeocodeLookupForNewLocation: function (result){
-                this.$broadcast('successfulLocationLookup', result);
-            },
-            failedGeocodeLookupForExistingLocation: function (location){
-                // handle failure
-            },
-            successfulGeocodeLookupForExistingLocation: function (result, location){
-                location.position = result[0].geometry.location;
-            },
-
-            setPositionForLocation: function (result, location){
-                debugger;
-                location.position = result[0].geometry.location;
             }
         },
         methods: {
-            onMapToolsReady:function (){
-                debugger;
-                // promise, once all pins are loaded then place on map and center
-                this.locations.forEach(function (location){
-                    var position = this.$broadcast('sendLookupLocationRequest',
-                        location.address,
-                        'successfulGeocodeLookupForExistingLocation',
-                        'failedGeocodeLookupForExistingLocation',
-                        location
-                    );
-                    this.location.position = position;
-                },this);
-            },
             showAllPins: function (){
                 this.$broadcast('centerMap');
             },
-            // getPositionForAddress: function (location){
-            //     return this.$broadcast('getPositionForAddress', location);
-            // },
             onAddNewLocation: function (address, name, position, bounds){
                 var newLocation = {
                     address: address,
                     name: name,
                     position: position
                 };
+                var markerPayload = {
+                        position: position,
+                        label: 'test',
+                        bounds: bounds
+                };
                 this.locations.push(newLocation);
-                this.placeLocationOnMap(newLocation, bounds);
+                this.placeLocationOnMap(markerPayload);
             },
             placeLocationOnMap: function (location, bounds){
                 // Note that we're specifically sending this information as a

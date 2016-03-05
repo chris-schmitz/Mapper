@@ -79,8 +79,8 @@
             // Internal use
             // Used by the Map component after map is ready. It's used to
             // place the markers on the map.
-            successfulGeocode: 'initialPlacementOfMarkers',
-            failedGeocode: 'onFailedGeocode',
+            successfulLocalGeocode: 'initialPlacementOfMarkers',
+            failedLocalGeocode: 'onFailedGeocode',
             // ============================================================= //
 
         },
@@ -93,7 +93,9 @@
                     address: address
                 };
                 var promise = this.makeAGeocodePromise(location);
-                this.retreiveGeocodeResults(promise, 'dispatch');
+                // note, the promise needs to be in array for Promise.all
+                // consider cleaning this up
+                this.retreiveGeocodeResults([promise], 'dispatch');
             },
             // ============================================================= //
 
@@ -188,7 +190,8 @@
                 Promise.all(locationPromises).then(
                     (function (resultPayload){
                         if(transmissionMethod === 'emit'){
-                            this.$emit('successfulGeocode', resultPayload);
+                            this.$emit('successfulLocalGeocode', resultPayload);
+                            // this.$emit('successfulGeocode', resultPayload);
                         } else if (transmissionMethod === 'dispatch') {
                             this.$dispatch('successfulGeocode', resultPayload);
                         }
@@ -196,7 +199,7 @@
                 ).catch(
                     (function (error){
                         if(transmissionMethod === 'emit'){
-                            this.$emit('failedGeocode', error);
+                            this.$emit('failedLocalGeocode', error);
                         } else if (transmissionMethod === 'dispatch') {
                             this.$dispatch('failedGeocode', error);
                         }

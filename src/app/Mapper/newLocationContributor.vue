@@ -71,8 +71,8 @@
             return initialState();
         },
         events:{
-            failedLocationLookup: 'onFailedLocationLookup',
-            successfulLocationLookup: 'onSuccessfulLocationLookup'
+            successfulGeocode: 'onSuccessfulGeocode',
+            failedGeocode: 'onFailedGeocode',
         },
         methods:{
             submitClick: function (){
@@ -82,6 +82,12 @@
                     this.saveNewLocation();
                 }
             },
+
+            lookupLocationData: function (){
+                this.maskWindow();
+                this.$dispatch('geocodeThisAddress', this.location.address);
+            },
+
             saveNewLocation: function (){
                 // is there a way we can do this with vue instead of jquery?
                 $('#newLocationWindow').modal('hide');
@@ -94,28 +100,19 @@
                 );
                 this.resetWindow();
             },
-            lookupLocationData: function (){
-                this.maskWindow();
-                var lookupPayload = {
-                    address: this.location.address, // the address to geocode to lookup
-                    successCallbackEventName:'successfulGeocodeLookupForNewLocation', // the name of the passthrough event in the parent component
-                    failureCallbackEventName:'failedGeocodeLookupForNewLocation' // the name of the passthrough event in the parent component
-                    location: null
-                };
-                this.$dispatch( 'sendLookupLocationRequest', lookupPayload);
-            },
-            onSuccessfulLocationLookup: function (result){
+
+            onSuccessfulGeocode: function (result){
                 this.modalBodyDisplay = 'confirmGeocodedValue';
                 this.submitButtonText = 'Yes';
                 this.unmaskWindow();
-                this.addressToConfirm = result[0].formatted_address;
-                this.location.address = result[0].formatted_address;
-                this.location.position = result[0].geometry.location;
-                this.bestViewedByTheseBounds = result[0].geometry.viewport;
+                this.addressToConfirm = result[0].geocodeResults.formatted_address;
+                this.location.address = result[0].geocodeResults.formatted_address;
+                this.location.position = result[0].geocodeResults.geometry.location;
+                this.bestViewedByTheseBounds = result[0].geocodeResults.geometry.viewport;
             },
-            onFailedLocationLookup: function (){
-                debugger;
+            onFailedGeocode: function (error){
                 this.unmaskWindow();
+                alert(error)
             },
             maskWindow:function (){
             },
