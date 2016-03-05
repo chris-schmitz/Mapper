@@ -11236,25 +11236,29 @@ module.exports = {
     props: ['location'],
     data: function data() {
         return {
-            test: 'From Location component'
+            test: 'From Location component',
+            active: false
         };
     },
     events: {
         pressLocationButton: 'onPressLocationButton'
     },
     methods: {
-        onPressLocationButton: function onPressLocationButton() {
-            // if this is the location, press the button
+        onPressLocationButton: function onPressLocationButton(location) {
+            if (location.placeId == this.location.placeId) {
+                this.active = true;
+            } else {
+                this.active = false;
+            }
         },
         onLocationClick: function onLocationClick() {
             this.$dispatch('triggerLocationDisplay', this.location);
-            // trigger the info popover for the location
-            // pan to the location in the map
+            this.$dispatch('pressLocationButton', this.location);
         }
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button @click=\"onLocationClick\" type=\"button\" class=\"cs-locations btn btn-success\">\n    <b>{{ location.name }}</b>: {{ location.address }}\n</button>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<button @click=\"onLocationClick\" type=\"button\" class=\"cs-locations btn btn-success\" :class=\"{'active': active}\">\n    <b>{{ location.name }}</b>: {{ location.address }}\n</button>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -11438,6 +11442,8 @@ module.exports = {
                 this.geocoder.geocode({ address: location.address }, function (result) {
                     if (result !== undefined) {
                         location.position = result[0].geometry.location;
+                        location.bounds = result[0].geometry.viewport;
+                        location.placeId = result[0].place_id;
                         var payload = {
                             locationInstance: location,
                             geocodeResults: result[0]
@@ -11488,6 +11494,12 @@ if (module.hot) {(function () {  module.hot.accept()
 var __vueify_style__ = require("vueify-insert-css").insert("/* line 1, /Users/cschmitz/Development/CS/WebCode/Demos/Vue/Mapper/src/app/Mapper/sass/mapper.scss */\n.app {\n  margin-top: 20px; }\n\n/* line 5, stdin */\n.cs-mapper .body {\n  height: 500px;\n  overflow: hidden; }\n\n/* line 10, stdin */\n.cs-mapper .map-container {\n  padding: 0px; }\n\n/* line 14, stdin */\n.cs-mapper .locations-container {\n  height: 100%;\n  padding: 0px;\n  background-color: grey;\n  overflow-y: auto; }\n  /* line 21, stdin */\n  .cs-mapper .locations-container .header {\n    text-align: center;\n    color: white;\n    margin: 0px;\n    padding: 10px;\n    background-color: #a4d48d; }\n")
 'use strict';
 
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var location = require('./location.vue');
 var map = require('./map.vue');
 var newLocationContributor = require('./newLocationContributor.vue');
@@ -11537,22 +11549,30 @@ module.exports = {
             this.$broadcast('failedGeocode', error);
         },
         triggerLocationDisplay: function triggerLocationDisplay(location) {
-            this.$broadcast('showLocation', location);
+            this.$broadcast('panAndZoomToBounds', location);
+        },
+        pressLocationButton: function pressLocationButton(location) {
+            this.$broadcast('pressLocationButton', location);
         }
     },
     methods: {
         showAllPins: function showAllPins() {
             this.$broadcast('centerMap');
+            this.$broadcast('pressLocationButton', { placeId: 'fake place id' });
         },
-        onAddNewLocation: function onAddNewLocation(address, name, position, bounds) {
+        onAddNewLocation: function onAddNewLocation(address, name, position, placeId, bounds) {
             var newLocation = {
                 address: address,
                 name: name,
-                position: position
+                position: position,
+                placeId: placeId,
+                bounds: bounds
             };
             var markerPayload = {
+                address: address,
                 position: position,
-                label: 'test',
+                label: name,
+                placeId: placeId,
                 bounds: bounds
             };
             this.locations.push(newLocation);
@@ -11564,8 +11584,18 @@ module.exports = {
             // component because whenever a new location is added we want to
             // pan and zoom to show it. We can't do that if it's just a bind.
 
-            this.$broadcast('pressLocationButton', location);
-            this.$broadcast('placeLocationOnMap', location, bounds);
+            var placeLocationPromise = new _promise2.default(function (resolve, reject) {
+                var result = this.$broadcast('placeLocationOnMap', location, bounds);
+                resolve(location);
+            }.bind(this));
+
+            placeLocationPromise.then(function (location) {
+                this.$broadcast('pressLocationButton', location);
+            }.bind(this));
+
+            placeLocationPromise.catch(function (error) {
+                console.log('error' + error);
+            });
         }
     }
 };
@@ -11586,7 +11616,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update(id, module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"./location.vue":61,"./map.vue":62,"./newLocationContributor.vue":64,"vue":59,"vue-hot-reload-api":58,"vueify-insert-css":60}],64:[function(require,module,exports){
+},{"./location.vue":61,"./map.vue":62,"./newLocationContributor.vue":64,"babel-runtime/core-js/promise":1,"vue":59,"vue-hot-reload-api":58,"vueify-insert-css":60}],64:[function(require,module,exports){
 var __vueify_style__ = require("vueify-insert-css").insert("/* line 3, stdin */\n#newLocationWindow .btn {\n  width: 80px; }\n")
 'use strict';
 
@@ -11630,7 +11660,7 @@ module.exports = {
         saveNewLocation: function saveNewLocation() {
             // is there a way we can do this with vue instead of jquery?
             $('#newLocationWindow').modal('hide');
-            this.$dispatch('addNewLocation', this.location.address, this.location.name, this.location.position, this.bestViewedByTheseBounds);
+            this.$dispatch('addNewLocation', this.location.address, this.location.name, this.location.position, this.location.placeId, this.bestViewedByTheseBounds);
             this.resetWindow();
         },
 
@@ -11641,6 +11671,7 @@ module.exports = {
             this.addressToConfirm = result[0].geocodeResults.formatted_address;
             this.location.address = result[0].geocodeResults.formatted_address;
             this.location.position = result[0].geocodeResults.geometry.location;
+            this.location.placeId = result[0].geocodeResults.place_id;
             this.bestViewedByTheseBounds = result[0].geocodeResults.geometry.viewport;
         },
         onFailedGeocode: function onFailedGeocode(error) {

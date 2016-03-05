@@ -136,7 +136,7 @@
                 this.map.fitBounds(bounds);
             },
             onPanAndZoomToBounds: function (markerPayload){
-                this.map.fitBounds(markerPayload.bounds)
+                this.map.fitBounds(markerPayload.bounds);
             },
             addMarker: function (markerPayload){
                 var marker = new google.maps.Marker({
@@ -175,6 +175,8 @@
                         this.geocoder.geocode({address: location.address}, function (result){
                             if(result !== undefined){
                                 location.position = result[0].geometry.location;
+                                location.bounds = result[0].geometry.viewport;
+                                location.placeId = result[0].place_id;
                                 var payload = {
                                     locationInstance: location,
                                     geocodeResults: result[0]

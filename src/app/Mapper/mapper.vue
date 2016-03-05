@@ -106,23 +106,31 @@
                 this.$broadcast('failedGeocode', error);
             },
             triggerLocationDisplay: function (location){
-                this.$broadcast('showLocation', location);
+                this.$broadcast('panAndZoomToBounds', location);
+            },
+            pressLocationButton: function (location){
+                this.$broadcast('pressLocationButton', location);
             }
         },
         methods: {
             showAllPins: function (){
                 this.$broadcast('centerMap');
+                this.$broadcast('pressLocationButton', {placeId: 'fake place id'});
             },
-            onAddNewLocation: function (address, name, position, bounds){
+            onAddNewLocation: function (address, name, position, placeId, bounds){
                 var newLocation = {
                     address: address,
                     name: name,
-                    position: position
+                    position: position,
+                    placeId: placeId,
+                    bounds: bounds,
                 };
                 var markerPayload = {
-                        position: position,
-                        label: 'test',
-                        bounds: bounds
+                    address: address,
+                    position: position,
+                    label: name,
+                    placeId: placeId,
+                    bounds: bounds
                 };
                 this.locations.push(newLocation);
                 this.placeLocationOnMap(markerPayload);
@@ -133,8 +141,18 @@
                 // component because whenever a new location is added we want to
                 // pan and zoom to show it. We can't do that if it's just a bind.
 
-                this.$broadcast('pressLocationButton', location);
-                this.$broadcast('placeLocationOnMap', location, bounds);
+                var placeLocationPromise = new Promise((function (resolve, reject){
+                    var result = this.$broadcast('placeLocationOnMap', location, bounds);
+                    resolve(location);
+                }).bind(this));
+
+                placeLocationPromise.then((function (location){
+                    this.$broadcast('pressLocationButton', location);
+                }).bind(this));
+
+                placeLocationPromise.catch(function (error){
+                    console.log('error' + error);
+                });
             }
         }
     }

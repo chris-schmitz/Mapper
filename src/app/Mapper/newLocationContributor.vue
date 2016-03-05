@@ -96,6 +96,7 @@
                     this.location.address,
                     this.location.name,
                     this.location.position,
+                    this.location.placeId,
                     this.bestViewedByTheseBounds
                 );
                 this.resetWindow();
@@ -108,6 +109,7 @@
                 this.addressToConfirm = result[0].geocodeResults.formatted_address;
                 this.location.address = result[0].geocodeResults.formatted_address;
                 this.location.position = result[0].geocodeResults.geometry.location;
+                this.location.placeId = result[0].geocodeResults.place_id;
                 this.bestViewedByTheseBounds = result[0].geocodeResults.geometry.viewport;
             },
             onFailedGeocode: function (error){

@@ -12,7 +12,7 @@
 </style>
 
 <template>
-    <button @click="onLocationClick" type="button" class="cs-locations btn btn-success">
+    <button @click="onLocationClick" type="button" class="cs-locations btn btn-success" :class="{'active': active}">
         <b>{{ location.name }}</b>: {{ location.address }}
     </button>
 </template>
@@ -24,20 +24,24 @@
         ],
         data: function (){
             return {
-                test: 'From Location component'
+                test: 'From Location component',
+                active: false,
             }
         },
         events:{
             pressLocationButton: 'onPressLocationButton'
         },
         methods:{
-            onPressLocationButton: function (){
-                // if this is the location, press the button
+            onPressLocationButton: function (location){
+                if(location.placeId == this.location.placeId){
+                    this.active = true;
+                } else {
+                    this.active = false;
+                }
             },
             onLocationClick: function (){
                 this.$dispatch('triggerLocationDisplay', this.location);
-                // trigger the info popover for the location
-                // pan to the location in the map
+                this.$dispatch('pressLocationButton', this.location);
             }
         }
     }
