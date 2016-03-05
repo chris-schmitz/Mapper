@@ -17,6 +17,7 @@
     "browserify": "^13.0.0",
     "gulp": "^3.9.1",
     "gulp-connect": "^2.3.1",
+    "gulp-notify": "^2.2.0",
     "gulp-sass": "^2.2.0",
     "gutil": "^1.6.4",
     "jQuery": "^1.7.4",
