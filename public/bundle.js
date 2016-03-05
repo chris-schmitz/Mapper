@@ -11361,6 +11361,7 @@ module.exports = {
                 address: address
             };
             var promise = this.makeAGeocodePromise(location);
+
             // note, the promise needs to be in array for Promise.all
             // consider cleaning this up
             this.retreiveGeocodeResults([promise], 'dispatch');
@@ -11409,7 +11410,17 @@ module.exports = {
         addMarker: function addMarker(markerPayload) {
             var marker = new google.maps.Marker({
                 position: markerPayload.position,
+                animation: google.maps.Animation.DROP,
                 map: this.map
+            });
+
+            var content = ["<b>", markerPayload.label, "</b><br />", markerPayload.address].join('');
+            var infoWindow = new google.maps.InfoWindow({
+                content: content
+            });
+
+            marker.addListener('click', function () {
+                infoWindow.open(marker.get('map'), marker);
             });
         },
         // ============================================================= //
@@ -11426,8 +11437,10 @@ module.exports = {
         initialPlacementOfMarkers: function initialPlacementOfMarkers(resultPayload) {
             resultPayload.forEach(function (result) {
                 var markerPayload = {
+                    address: result.locationInstance.address,
                     position: result.locationInstance.position,
-                    label: result.locationInstance.name
+                    label: result.locationInstance.name,
+                    location: result.locationInstance
                 };
                 this.addMarker(markerPayload);
             }, this);
@@ -11600,7 +11613,7 @@ module.exports = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"panel panel-success cs-mapper\">\n    <div class=\"panel-heading\">\n        <h1>Mapper</h1>\n    </div>\n\n    <div class=\"body\">\n        <div class=\"col-sm-3 locations-container\">\n            <h3 class=\"header\">Saved Locations</h3>\n            <cs-location v-for=\"location in locations\" :location=\"location\">\n        </cs-location></div>\n        <div class=\"col-sm-9 map-container\">\n            <cs-map :locations=\"locations\"></cs-map>\n        </div>\n    </div>\n\n    <div class=\"panel-footer\">\n        <cs-new-location-contributor></cs-new-location-contributor>\n        <button type=\"button\" class=\"btn btn-primary\" @click=\"showAllPins\">Show All Locations</button>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"panel panel-success cs-mapper\">\n    <div class=\"panel-heading\">\n        <h1>Mapper</h1>\n    </div>\n\n    <div class=\"body\">\n        <div class=\"col-sm-3 locations-container\">\n            <h3 class=\"header\">Saved Locations</h3>\n            <cs-location v-for=\"location in locations\" :location=\"location\">\n        </cs-location></div>\n        <div class=\"col-sm-9 map-container\">\n            <cs-map :locations=\"locations\"></cs-map>\n        </div>\n    </div>\n\n    <div class=\"panel-footer\">\n        <cs-new-location-contributor></cs-new-location-contributor>\n        <button type=\"button\" class=\"btn btn-primary pull-right\" @click=\"showAllPins\">Show All Locations</button>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)

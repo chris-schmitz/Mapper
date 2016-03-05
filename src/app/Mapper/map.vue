@@ -93,6 +93,7 @@
                     address: address
                 };
                 var promise = this.makeAGeocodePromise(location);
+
                 // note, the promise needs to be in array for Promise.all
                 // consider cleaning this up
                 this.retreiveGeocodeResults([promise], 'dispatch');
@@ -141,7 +142,17 @@
             addMarker: function (markerPayload){
                 var marker = new google.maps.Marker({
                     position: markerPayload.position,
+                    animation: google.maps.Animation.DROP,
                     map: this.map
+                });
+
+                var content = ["<b>" , markerPayload.label , "</b><br />" , markerPayload.address].join('');
+                var infoWindow = new google.maps.InfoWindow({
+                    content: content
+                });
+
+                marker.addListener('click', function (){
+                    infoWindow.open(marker.get('map'), marker);
                 });
             },
             // ============================================================= //
@@ -158,8 +169,10 @@
             initialPlacementOfMarkers: function (resultPayload){
                 resultPayload.forEach(function (result){
                     var markerPayload = {
+                        address: result.locationInstance.address,
                         position: result.locationInstance.position,
-                        label: result.locationInstance.name
+                        label: result.locationInstance.name,
+                        location: result.locationInstance
                     }
                     this.addMarker(markerPayload);
                 }, this);

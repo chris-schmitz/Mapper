@@ -47,7 +47,7 @@
 
         <div class="panel-footer">
             <cs-new-location-contributor></cs-new-location-contributor>
-            <button type="button" class="btn btn-primary" @click="showAllPins">Show All Locations</button>
+            <button type="button" class="btn btn-primary pull-right" @click="showAllPins">Show All Locations</button>
         </div>
     </div>
 </template>
