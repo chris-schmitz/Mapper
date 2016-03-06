@@ -10,6 +10,11 @@ This is a demo file I'm using to prototype the interaction between a vue.js app 
 
 To launch this project you'll need [Node.js](https://nodejs.org/en/download/) installed. This will install both Node and npm.
 
+You will also need to generate your own google maps API key.
+
+Once you have your key, you'll need to add it to the `map.vue` component. I'll add more detail on how and where later.
+
+ 
 ## Install and Launch
 
 To get this project up and running:
