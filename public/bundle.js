@@ -11295,7 +11295,7 @@ module.exports = {
     },
     created: function created() {
         var GoogleMapsLoader = require('google-maps');
-        GoogleMapsLoader.KEY = 'AIzaSyCNlgjm4ISAra17hpfBebbp2vlWMD3v3uc';
+        GoogleMapsLoader.KEY = 'YOURGOOGLEAPIKEYHERE';
 
         GoogleMapsLoader.load(
         // note, we're wrapping all of this in parenthesis so that we
