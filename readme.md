@@ -6,15 +6,25 @@
 
 This is a demo file I'm using to prototype the interaction between a vue.js app and a google map instance.
 
+## Mockup
+
+The mockup I put together to rough out the base idea of the Mapper demo can be found [here on draw.io](https://drive.google.com/file/d/0Bxhfk2Nciu7jcFV6ZVBfbUoyS00/view?usp=sharing). (Note that you will need a google account to access the mockup because it's source is stored in google drive).
+
+Also note that not all features of the mockup were implemented. I started building it out and then realized after building a bit that I actually wanted to interact with google places and not just geocode addresses. It was still a worthwhile exploration, but I only wanted to take it as far as geocoding and then leave it there.
+
 ## Prerequisites
 
 To launch this project you'll need [Node.js](https://nodejs.org/en/download/) installed. This will install both Node and npm.
 
-You will also need to generate your own google maps API key.
+You will also need to generate your own google maps API key. Please refer to the [google maps javascript instructions for generating an API key](https://developers.google.com/maps/documentation/javascript/get-api-key). Once you have your key, open the file:
 
-Once you have your key, you'll need to add it to the `map.vue` component. I'll add more detail on how and where later.
+    src/app/Mapper/map.vue
 
- 
+In this line of code replace the 'YOURGOOGLEAPIKEYHERE' with your API Key:
+
+    GoogleMapsLoader.KEY = 'YOURGOOGLEAPIKEYHERE';
+
+
 ## Install and Launch
 
 To get this project up and running:
