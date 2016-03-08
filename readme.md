@@ -1,5 +1,3 @@
-# This build is still in progress
-
 # Mapper
 
 ![mapper demo](readmeAttachments/mapperdemo.gif)
