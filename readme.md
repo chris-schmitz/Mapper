@@ -31,7 +31,7 @@ To get this project up and running:
 
 	    cd ~/Desktop
 	    git clone https://github.com/chris-schmitz/Mapper.git Mapper
-	    cd VueToDos
+	    cd Mapper
 
 - Install the project dependencies using `npm` (installed when you install node):
 
