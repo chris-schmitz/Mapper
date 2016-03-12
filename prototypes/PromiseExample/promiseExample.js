@@ -21,7 +21,7 @@ var geocodeAddresses = function (address){
 }
 
 // an example of a single request via the promise
-// geocodeAddresses('5624 Arthur Ave 63139').then(function (result){
+// geocodeAddresses('123 Main Street').then(function (result){
 //     console.log('promise result success: ' + result);
 // }, function (error){
 //     console.log('promise result error: ' + error);
